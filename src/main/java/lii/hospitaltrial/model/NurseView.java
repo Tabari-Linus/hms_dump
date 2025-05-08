@@ -1,33 +1,40 @@
 package lii.hospitaltrial.model;
 
-public class DoctorView {
+public class NurseView {
     private long employeeId;
     private String firstName;
     private String surname;
     private String address;
     private long telephoneNo;
-    private long specialityId;
-    private String specialityName;
+    private String department;
+    private String rotation;
+    private double salary;
+    private long departmentId;
 
-    public DoctorView(Employee employee, Doctor doctor, String specialityName) {
+    public NurseView(Employee employee, Nurse nurse, String department) {
         this.employeeId = employee.getEmployeeId();
         this.firstName = employee.getFirstName();
         this.surname = employee.getSurname();
         this.address = employee.getAddress();
         this.telephoneNo = employee.getTelephoneNo();
-        this.specialityId = doctor.getSpecialityId();
-        this.specialityName = specialityName;
+        this.department = department;
+        this.rotation = nurse.getRotation();
+        this.salary = nurse.getSalary();
+        this.departmentId = nurse.getDepartmentId();
     }
 
-    // Getters only since this is a view model
+    // Existing getters
     public long getEmployeeId() { return employeeId; }
     public String getFirstName() { return firstName; }
     public String getSurname() { return surname; }
     public String getFullName() { return firstName + " " + surname; }
     public String getAddress() { return address; }
     public long getTelephoneNo() { return telephoneNo; }
-    public long getSpecialityId() { return specialityId; }
-    public String getSpecialityName() {
-        return specialityName;
-    }
+    public String getDepartmentName() { return department; }
+
+    // New getters for nurse-specific fields
+    public String getRotation() { return rotation; }
+    public double getSalary() { return salary; }
+    public long getDepartmentId() { return departmentId; }
+
 }

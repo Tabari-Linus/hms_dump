@@ -31,13 +31,15 @@ public class SpecialityCRUD {
 
     public List<Speciality> getAllSpecialities() {
         List<Speciality> specialities = new ArrayList<>();
-        String sql = "SELECT * FROM speciality";
+        String sql = "SELECT speciality_id, name FROM speciality";
+
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql);
              ResultSet resultSet = statement.executeQuery()) {
+
             while (resultSet.next()) {
                 Speciality speciality = new Speciality(
-                        resultSet.getLong("id"),
+                        resultSet.getLong("speciality_id"),  // Changed from "id" to "speciality_id"
                         resultSet.getString("name")
                 );
                 specialities.add(speciality);
@@ -88,4 +90,25 @@ public class SpecialityCRUD {
             return false;
         }
     }
+    public Speciality getSpecialityById(long id) {
+        String sql = "SELECT speciality_id, name FROM speciality WHERE speciality_id = ?";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setLong(1, id);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Speciality(
+                            resultSet.getLong("speciality_id"),
+                            resultSet.getString("name")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 }

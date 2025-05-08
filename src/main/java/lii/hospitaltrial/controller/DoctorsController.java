@@ -3,6 +3,7 @@ package lii.hospitaltrial.controller;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.layout.Region;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.collections.FXCollections;
@@ -16,6 +17,10 @@ import lii.hospitaltrial.model.Employee;
 import lii.hospitaltrial.model.Doctor;
 import lii.hospitaltrial.databasecrud.DoctorCRUD;
 import lii.hospitaltrial.databasecrud.EmployeeCRUD;
+import lii.hospitaltrial.databasecrud.SpecialityCRUD;
+import lii.hospitaltrial.model.Speciality;
+import lii.hospitaltrial.component.CardBox;
+
 
 
 import java.sql.Connection;
@@ -30,22 +35,58 @@ public class DoctorsController {
     @FXML private TableColumn<DoctorView, String> nameColumn;
     @FXML private TableColumn<DoctorView, String> addressColumn;
     @FXML private TableColumn<DoctorView, Long> phoneColumn;
-    @FXML private TableColumn<DoctorView, Long> specialityColumn;
+    @FXML private TableColumn<DoctorView, String> specialityColumn;
     @FXML private TableColumn<DoctorView, Void> actionsColumn;
     @FXML private TextField searchField;
     @FXML private Button addDoctorBtn;
+    @FXML private HBox summaryContainer;
+    private CardBox totalDoctorsCard;
+    private CardBox directorDoctorsCard;
 
     private final DoctorCRUD doctorCRUD = new DoctorCRUD();
     private final EmployeeCRUD employeeCRUD = new EmployeeCRUD();
     private ObservableList<DoctorView> doctorsList = FXCollections.observableArrayList();
+    private final SpecialityCRUD specialityCRUD = new SpecialityCRUD(); // Add this field
 
     @FXML
     private void initialize() {
+
         setupTable();
+        setupSummaryCards();
         setupSearch();
         setupAddButton();
         loadDoctors();
+        updateSummaryCards();
     }
+
+    private void setupSummaryCards() {
+        totalDoctorsCard = new CardBox("Total Doctors");
+        directorDoctorsCard = new CardBox("Director Doctors");
+
+        // Add some spacing between cards
+        Region spacer = new Region();
+        spacer.setMinWidth(20);
+
+        summaryContainer.getChildren().addAll(totalDoctorsCard, spacer, directorDoctorsCard);
+    }
+
+    private void updateSummaryCards() {
+        // Update total doctors count
+        totalDoctorsCard.setCount(doctorsList.size());
+
+        // Count doctors who are directors
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(
+                     "SELECT COUNT(DISTINCT director_id) FROM department WHERE director_id IS NOT NULL")) {
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                directorDoctorsCard.setCount(rs.getLong(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private void setupTable() {
         idColumn.setCellValueFactory(cellData ->
@@ -57,7 +98,7 @@ public class DoctorsController {
         phoneColumn.setCellValueFactory(cellData ->
                 new javafx.beans.property.SimpleLongProperty(cellData.getValue().getTelephoneNo()).asObject());
         specialityColumn.setCellValueFactory(cellData ->
-                new javafx.beans.property.SimpleLongProperty(cellData.getValue().getSpecialityId()).asObject());
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getSpecialityName()));
 
         setupActionsColumn();
         doctorsTable.setItems(doctorsList);
@@ -100,11 +141,24 @@ public class DoctorsController {
                     System.err.println("Employee not found for Doctor ID: " + doctor.getEmployeeId());
                     continue;
                 }
-                doctorsList.add(new DoctorView(employee, doctor));
+
+                // Get specialty name
+                String specialityName = "";
+                try {
+                    Speciality speciality = specialityCRUD.getSpecialityById(doctor.getSpecialityId());
+                    if (speciality != null) {
+                        specialityName = speciality.getName();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                doctorsList.add(new DoctorView(employee, doctor, specialityName));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        updateSummaryCards();
     }
 
     private void setupSearch() {
@@ -115,7 +169,7 @@ public class DoctorsController {
                 ObservableList<DoctorView> filteredList = doctorsList.filtered(doctor ->
                         doctor.getFullName().toLowerCase().contains(newValue.toLowerCase()) ||
                                 String.valueOf(doctor.getEmployeeId()).contains(newValue) ||
-                                String.valueOf(doctor.getSpecialityId()).contains(newValue)
+                                doctor.getSpecialityName().toLowerCase().contains(newValue.toLowerCase())
                 );
                 doctorsTable.setItems(filteredList);
             }

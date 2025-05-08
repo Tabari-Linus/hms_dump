@@ -30,9 +30,6 @@ public class Speciality {
 
     @Override
     public String toString() {
-        return "Speciality{" +
-                "specialityId=" + specialityId +
-                ", name='" + name + '\'' +
-                '}';
+        return name;
     }
 }

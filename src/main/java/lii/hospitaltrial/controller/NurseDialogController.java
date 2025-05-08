@@ -3,32 +3,34 @@ package lii.hospitaltrial.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import lii.hospitaltrial.model.Doctor;
+import lii.hospitaltrial.model.Nurse;
 import lii.hospitaltrial.model.Employee;
-import lii.hospitaltrial.model.Speciality;
+import lii.hospitaltrial.model.Department;
 import lii.hospitaltrial.databasecrud.EmployeeCRUD;
-import lii.hospitaltrial.databasecrud.SpecialityCRUD;
+import lii.hospitaltrial.databasecrud.DepartmentCRUD;
 
-public class DoctorDialogController {
+public class NurseDialogController {
     @FXML private TextField employeeIdField;
     @FXML private TextField firstNameField;
     @FXML private TextField surnameField;
     @FXML private TextField addressField;
     @FXML private TextField telephoneNoField;
-    @FXML private ComboBox<Speciality> specialityComboBox;
+    @FXML private ComboBox<String> rotationComboBox;
+    @FXML private TextField salaryField;
+    @FXML private ComboBox<Department> departmentComboBox;
     @FXML private Button saveButton;
     @FXML private Button cancelButton;
 
     private boolean saveClicked = false;
     private Employee employee;
-    private Doctor doctor;
+    private Nurse nurse;
     private final EmployeeCRUD employeeCRUD = new EmployeeCRUD();
-    private final SpecialityCRUD specialityCRUD = new SpecialityCRUD();
+    private final DepartmentCRUD departmentCRUD = new DepartmentCRUD();
 
     @FXML
     private void initialize() {
-
-        loadSpecialities();
+        loadDepartments();
+        setupRotationComboBox();
 
         cancelButton.setOnAction(e -> closeDialog());
         saveButton.setOnAction(e -> handleSave());
@@ -37,67 +39,77 @@ public class DoctorDialogController {
         employeeIdField.setEditable(false);
         employeeIdField.setDisable(true);
 
-        // If this is a new doctor (employee and doctor are null), generate new ID
-        if (employee == null && doctor == null) {
+        // If this is a new nurse, generate new ID
+        if (employee == null && nurse == null) {
             long nextId = employeeCRUD.getLastEmployeeId() + 1;
             employeeIdField.setText(String.valueOf(nextId));
         }
 
-        specialityComboBox.setButtonCell(new ListCell<>() {
+        setupDepartmentComboBox();
+    }
+
+    private void setupRotationComboBox() {
+        rotationComboBox.getItems().addAll("Morning", "Afternoon", "Night");
+    }
+
+    private void setupDepartmentComboBox() {
+        departmentComboBox.setButtonCell(new ListCell<>() {
             @Override
-            protected void updateItem(Speciality item, boolean empty) {
+            protected void updateItem(Department item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item.getName());
+                    setText(item.getDepartmentName());
                 }
             }
         });
 
-        specialityComboBox.setCellFactory(param -> new ListCell<>() {
+        departmentComboBox.setCellFactory(param -> new ListCell<>() {
             @Override
-            protected void updateItem(Speciality item, boolean empty) {
+            protected void updateItem(Department item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setText(null);
                 } else {
-                    setText(item.getName());
+                    setText(item.getDepartmentName());
                 }
             }
         });
     }
 
-    private void loadSpecialities() {
-        if (specialityComboBox != null) {
-            specialityComboBox.getItems().clear();
-            specialityComboBox.getItems().addAll(specialityCRUD.getAllSpecialities());
+    private void loadDepartments() {
+        if (departmentComboBox != null) {
+            departmentComboBox.getItems().clear();
+            departmentComboBox.getItems().addAll(departmentCRUD.getAllDepartments());
         }
     }
 
-    public void setDoctorData(Employee employee, Doctor doctor) {
+    public void setNurseData(Employee employee, Nurse nurse) {
         this.employee = employee;
-        this.doctor = doctor;
+        this.nurse = nurse;
 
         if (employee != null) {
-            // Existing doctor - show current values
+            // Existing nurse - show current values
             employeeIdField.setText(String.valueOf(employee.getEmployeeId()));
             firstNameField.setText(employee.getFirstName());
             surnameField.setText(employee.getSurname());
             addressField.setText(employee.getAddress());
             telephoneNoField.setText(String.valueOf(employee.getTelephoneNo()));
         } else {
-            // New doctor - generate new ID
+            // New nurse - generate new ID
             long nextId = employeeCRUD.getLastEmployeeId() + 1;
             employeeIdField.setText(String.valueOf(nextId));
         }
 
-        if (doctor != null) {
-            // Find and select the specialty in combo box
-            specialityComboBox.getItems().stream()
-                    .filter(s -> s.getSpecialityId() == doctor.getSpecialityId())
+        if (nurse != null) {
+            rotationComboBox.setValue(nurse.getRotation());
+            salaryField.setText(String.valueOf(nurse.getSalary()));
+            // Find and select the department in combo box
+            departmentComboBox.getItems().stream()
+                    .filter(d -> d.getDepartmentCode() == nurse.getDepartmentId())
                     .findFirst()
-                    .ifPresent(speciality -> specialityComboBox.setValue(speciality));
+                    .ifPresent(department -> departmentComboBox.setValue(department));
         }
     }
 
@@ -111,18 +123,21 @@ public class DoctorDialogController {
                     surnameField.getText().isEmpty() ||
                     addressField.getText().isEmpty() ||
                     telephoneNoField.getText().isEmpty() ||
-                    specialityComboBox.getValue() == null) {
+                    rotationComboBox.getValue() == null ||
+                    salaryField.getText().isEmpty() ||
+                    departmentComboBox.getValue() == null) {
                 throw new IllegalArgumentException("All fields are required.");
             }
 
             long employeeId = Long.parseLong(employeeIdField.getText());
             long telephoneNo = Long.parseLong(telephoneNoField.getText());
+            double salary = Double.parseDouble(salaryField.getText());
 
             if (employee == null) {
                 employee = new Employee();
             }
-            if (doctor == null) {
-                doctor = new Doctor();
+            if (nurse == null) {
+                nurse = new Nurse();
             }
 
             employee.setEmployeeId(employeeId);
@@ -131,13 +146,15 @@ public class DoctorDialogController {
             employee.setAddress(addressField.getText());
             employee.setTelephoneNo(telephoneNo);
 
-            doctor.setEmployeeId(employeeId);
-            doctor.setSpecialityId(specialityComboBox.getValue().getSpecialityId());
+            nurse.setEmployeeId(employeeId);
+            nurse.setRotation(rotationComboBox.getValue());
+            nurse.setSalary(salary);
+            nurse.setDepartmentId(departmentComboBox.getValue().getDepartmentCode());
 
             saveClicked = true;
             closeDialog();
         } catch (NumberFormatException e) {
-            showError("Telephone No and Speciality ID must be numeric.");
+            showError("Telephone No and Salary must be numeric.");
         } catch (IllegalArgumentException e) {
             showError(e.getMessage());
         }
@@ -160,7 +177,7 @@ public class DoctorDialogController {
         return employee;
     }
 
-    public Doctor getDoctor() {
-        return doctor;
+    public Nurse getNurse() {
+        return nurse;
     }
 }

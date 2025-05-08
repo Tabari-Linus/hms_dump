@@ -1,6 +1,7 @@
 package lii.hospitaltrial.databasecrud;
 
 import lii.hospitaltrial.model.Doctor;
+import lii.hospitaltrial.model.DoctorDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -87,5 +88,36 @@ public class DoctorCRUD {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<DoctorDTO> getDoctorsWithSpecialities() {
+        List<DoctorDTO> doctors = new ArrayList<>();
+        String sql = """
+        SELECT e.employee_id, e.first_name, e.surname, e.address, e.telephone_no, s.name as speciality_name
+        FROM employee e
+        INNER JOIN doctor d ON e.employee_id = d.employee_id
+        INNER JOIN speciality s ON d.speciality_id = s.speciality_id
+        ORDER BY e.employee_id
+    """;
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                DoctorDTO doctor = new DoctorDTO(
+                        resultSet.getLong("employee_id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("surname"),
+                        resultSet.getString("address"),
+                        resultSet.getLong("telephone_no"),
+                        resultSet.getString("speciality_name")
+                );
+                doctors.add(doctor);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return doctors;
     }
 }
