@@ -102,6 +102,13 @@
             <version>42.7.5</version>
         </dependency>
 
+        <!-- Dependency for FontAwesomeFX -->
+        <dependency>
+            <groupId>de.jensd</groupId>
+            <artifactId>fontawesomefx-fontawesome</artifactId>
+            <version>4.7.0-9.1.2</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -121,10 +128,9 @@
                 <version>0.0.8</version>
                 <executions>
                     <execution>
-                        <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>lii.hospitaltrial/lii.hospitaltrial.HelloApplication</mainClass>
+                            <mainClass>lii.hospitaltrial.HospitalSystem</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

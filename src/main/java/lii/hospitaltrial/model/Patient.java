@@ -1,70 +1,98 @@
 package lii.hospitaltrial.model;
 
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class Patient {
-    private long patientId;
-    private String firstName;
-    private String surname;
-    private String address;
-    private long telephoneNo;
+    private final LongProperty patientId = new SimpleLongProperty();
+    private final StringProperty firstName = new SimpleStringProperty();
+    private final StringProperty surname = new SimpleStringProperty();
+    private final StringProperty address = new SimpleStringProperty();
+    private final LongProperty telephoneNo = new SimpleLongProperty();
 
     public Patient() {}
 
     public Patient(long patientId, String firstName, String surname, String address, long telephoneNo) {
-        this.patientId = patientId;
-        this.firstName = firstName;
-        this.surname = surname;
-        this.address = address;
-        this.telephoneNo = telephoneNo;
+        setPatientId(patientId);
+        setFirstName(firstName);
+        setSurname(surname);
+        setAddress(address);
+        setTelephoneNo(telephoneNo);
     }
 
-    public long getPatientId() {
+    // Property accessors (follow JavaFX naming convention)
+    public LongProperty patientIdProperty() {
         return patientId;
     }
 
-    public void setPatientId(long patientId) {
-        this.patientId = patientId;
-    }
-
-    public String getFirstName() {
+    public StringProperty firstNameProperty() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getSurname() {
+    public StringProperty surnameProperty() {
         return surname;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
-    public String getAddress() {
+    public StringProperty addressProperty() {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public long getTelephoneNo() {
+    public LongProperty telephoneNoProperty() {
         return telephoneNo;
     }
 
+    // Getters
+    public long getPatientId() {
+        return patientId.get();
+    }
+
+    public String getFirstName() {
+        return firstName.get();
+    }
+
+    public String getSurname() {
+        return surname.get();
+    }
+
+    public String getAddress() {
+        return address.get();
+    }
+
+    public long getTelephoneNo() {
+        return telephoneNo.get();
+    }
+
+    // Setters
+    public void setPatientId(long patientId) {
+        this.patientId.set(patientId);
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName.set(firstName);
+    }
+
+    public void setSurname(String surname) {
+        this.surname.set(surname);
+    }
+
+    public void setAddress(String address) {
+        this.address.set(address);
+    }
+
     public void setTelephoneNo(long telephoneNo) {
-        this.telephoneNo = telephoneNo;
+        this.telephoneNo.set(telephoneNo);
     }
 
     @Override
     public String toString() {
         return "Patient{" +
-                "patientId=" + patientId +
-                ", firstName='" + firstName + '\'' +
-                ", surname='" + surname + '\'' +
-                ", address='" + address + '\'' +
-                ", telephoneNo=" + telephoneNo +
+                "patientId=" + getPatientId() +
+                ", firstName='" + getFirstName() + '\'' +
+                ", surname='" + getSurname() + '\'' +
+                ", address='" + getAddress() + '\'' +
+                ", telephoneNo=" + getTelephoneNo() +
                 '}';
     }
 }

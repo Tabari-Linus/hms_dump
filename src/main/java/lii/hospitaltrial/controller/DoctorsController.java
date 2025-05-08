@@ -1,0 +1,178 @@
+package lii.hospitaltrial.controller;
+
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+
+import lii.hospitaltrial.model.DoctorView;
+import lii.hospitaltrial.model.Employee;
+import lii.hospitaltrial.model.Doctor;
+import lii.hospitaltrial.databasecrud.DoctorCRUD;
+import lii.hospitaltrial.databasecrud.EmployeeCRUD;
+
+
+import java.util.List;
+
+public class DoctorsController {
+    @FXML private TableView<DoctorView> doctorsTable;
+    @FXML private TableColumn<DoctorView, Long> idColumn;
+    @FXML private TableColumn<DoctorView, String> nameColumn;
+    @FXML private TableColumn<DoctorView, String> addressColumn;
+    @FXML private TableColumn<DoctorView, Long> phoneColumn;
+    @FXML private TableColumn<DoctorView, Long> specialityColumn;
+    @FXML private TableColumn<DoctorView, Void> actionsColumn;
+    @FXML private TextField searchField;
+    @FXML private Button addDoctorBtn;
+
+    private final DoctorCRUD doctorCRUD = new DoctorCRUD();
+    private final EmployeeCRUD employeeCRUD = new EmployeeCRUD();
+    private ObservableList<DoctorView> doctorsList = FXCollections.observableArrayList();
+
+    @FXML
+    private void initialize() {
+        setupTable();
+        setupSearch();
+        setupAddButton();
+        loadDoctors();
+    }
+
+    private void setupTable() {
+        idColumn.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleLongProperty(cellData.getValue().getEmployeeId()).asObject());
+        nameColumn.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getFullName()));
+        addressColumn.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleStringProperty(cellData.getValue().getAddress()));
+        phoneColumn.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleLongProperty(cellData.getValue().getTelephoneNo()).asObject());
+        specialityColumn.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleLongProperty(cellData.getValue().getSpecialityId()).asObject());
+
+        setupActionsColumn();
+        doctorsTable.setItems(doctorsList);
+    }
+
+    private void setupActionsColumn() {
+        actionsColumn.setCellFactory(param -> new TableCell<>() {
+            private final Button editBtn = new Button("Edit");
+            private final Button deleteBtn = new Button("Delete");
+            private final HBox buttons = new HBox(5, editBtn, deleteBtn);
+
+            {
+                editBtn.getStyleClass().add("edit-button");
+                deleteBtn.getStyleClass().add("delete-button");
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || getIndex() >= getTableView().getItems().size()) {
+                    setGraphic(null);
+                } else {
+                    DoctorView doctorView = getTableView().getItems().get(getIndex());
+                    setGraphic(buttons);
+                    editBtn.setOnAction(e -> editDoctor(doctorView));
+                    deleteBtn.setOnAction(e -> deleteDoctor(doctorView));
+                }
+            }
+        });
+    }
+
+    private void loadDoctors() {
+        doctorsList.clear();
+        List<Doctor> doctors = doctorCRUD.getAllDoctors();
+
+        for (Doctor doctor : doctors) {
+            try {
+                Employee employee = employeeCRUD.getEmployeeById(doctor.getEmployeeId());
+                if (employee == null) {
+                    System.err.println("Employee not found for Doctor ID: " + doctor.getEmployeeId());
+                    continue;
+                }
+                doctorsList.add(new DoctorView(employee, doctor));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void setupSearch() {
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null || newValue.isEmpty()) {
+                doctorsTable.setItems(doctorsList);
+            } else {
+                ObservableList<DoctorView> filteredList = doctorsList.filtered(doctor ->
+                        doctor.getFullName().toLowerCase().contains(newValue.toLowerCase()) ||
+                                String.valueOf(doctor.getEmployeeId()).contains(newValue) ||
+                                String.valueOf(doctor.getSpecialityId()).contains(newValue)
+                );
+                doctorsTable.setItems(filteredList);
+            }
+        });
+    }
+
+    private void setupAddButton() {
+        addDoctorBtn.setOnAction(e -> showDoctorDialog(null));
+    }
+
+    private void editDoctor(DoctorView doctorView) {
+        showDoctorDialog(doctorView);
+    }
+
+    private void deleteDoctor(DoctorView doctorView) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete Doctor");
+        alert.setHeaderText("Delete Doctor: " + doctorView.getFullName());
+        alert.setContentText("Are you sure you want to delete this doctor?");
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                if (doctorCRUD.deleteDoctor(doctorView.getEmployeeId()) &&
+                        employeeCRUD.deleteEmployee(doctorView.getEmployeeId())) {
+                    loadDoctors(); // Refresh table
+                }
+            }
+        });
+    }
+
+    private void showDoctorDialog(DoctorView doctorView) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/lii/hospitaltrial/view/DoctorDialog.fxml"));
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setTitle(doctorView == null ? "Add Doctor" : "Edit Doctor");
+            dialogStage.setScene(new Scene(loader.load()));
+
+            DoctorDialogController controller = loader.getController();
+            if (doctorView != null) {
+                Employee employee = employeeCRUD.getEmployeeById(doctorView.getEmployeeId());
+                Doctor doctor = new Doctor(doctorView.getEmployeeId(), doctorView.getSpecialityId());
+                controller.setDoctorData(employee, doctor);
+            }
+
+            dialogStage.showAndWait();
+
+            if (controller.isSaveClicked()) {
+                Employee employee = controller.getEmployee();
+                Doctor doctor = controller.getDoctor();
+
+                if (doctorView == null) {
+                    employeeCRUD.insertEmployee(employee);
+                    doctorCRUD.insertDoctor(doctor);
+                } else {
+                    employeeCRUD.updateEmployee(employee);
+                    doctorCRUD.updateDoctor(doctor);
+                }
+                loadDoctors(); // Refresh table
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

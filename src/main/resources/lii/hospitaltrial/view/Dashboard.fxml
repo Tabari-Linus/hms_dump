@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+        <?import javafx.scene.layout.*?>
+        <?import javafx.scene.control.*?>
+        <?import javafx.geometry.Insets?>
+
+<VBox spacing="20" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="lii.hospitaltrial.controller.DashboardController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Dashboard Overview" styleClass="page-title"/>
+
+    <GridPane hgap="20" vgap="20">
+        <VBox styleClass="dashboard-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <Label fx:id="totalDoctors" text="0" styleClass="dashboard-number"/>
+            <Label text="Total Doctors" styleClass="dashboard-label"/>
+        </VBox>
+
+        <VBox styleClass="dashboard-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <Label fx:id="totalNurses" text="0" styleClass="dashboard-number"/>
+            <Label text="Total Nurses" styleClass="dashboard-label"/>
+        </VBox>
+
+        <VBox styleClass="dashboard-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <Label fx:id="totalPatients" text="0" styleClass="dashboard-number"/>
+            <Label text="Total Patients" styleClass="dashboard-label"/>
+        </VBox>
+
+        <VBox styleClass="dashboard-card" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <Label fx:id="totalDepartments" text="0" styleClass="dashboard-number"/>
+            <Label text="Departments" styleClass="dashboard-label"/>
+        </VBox>
+
+        <VBox styleClass="dashboard-card" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label fx:id="totalWards" text="0" styleClass="dashboard-number"/>
+            <Label text="Total Wards" styleClass="dashboard-label"/>
+        </VBox>
+
+        <VBox styleClass="dashboard-card" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <Label fx:id="totalAdmissions" text="0" styleClass="dashboard-number"/>
+            <Label text="Current Admissions" styleClass="dashboard-label"/>
+        </VBox>
+    </GridPane>
+</VBox>

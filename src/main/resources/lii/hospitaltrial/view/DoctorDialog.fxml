@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox spacing="15" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="lii.hospitaltrial.controller.DoctorDialogController">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Doctor Details" styleClass="dialog-title"/>
+
+    <GridPane hgap="10" vgap="10">
+        <Label text="Employee ID:"/>
+        <TextField fx:id="employeeIdField" GridPane.columnIndex="1"/>
+
+        <Label text="First Name:" GridPane.rowIndex="1"/>
+        <TextField fx:id="firstNameField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+
+        <Label text="Surname:" GridPane.rowIndex="2"/>
+        <TextField fx:id="surnameField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+
+        <Label text="Address:" GridPane.rowIndex="3"/>
+        <TextField fx:id="addressField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+
+        <Label text="Telephone No:" GridPane.rowIndex="4"/>
+        <TextField fx:id="telephoneNoField" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+
+        <Label text="Speciality ID:" GridPane.rowIndex="5"/>
+        <TextField fx:id="specialityIdField" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+    </GridPane>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Cancel" fx:id="cancelButton"/>
+        <Button text="Save" fx:id="saveButton" defaultButton="true"/>
+    </HBox>
+</VBox>
