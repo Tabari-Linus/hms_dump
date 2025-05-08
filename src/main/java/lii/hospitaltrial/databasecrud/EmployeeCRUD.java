@@ -33,6 +33,21 @@ public class EmployeeCRUD {
         }
     }
 
+    public long getLastEmployeeId() {
+        String sql = "SELECT MAX(employee_id) FROM employee";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            if (resultSet.next()) {
+                return resultSet.getLong(1);
+            }
+            return 100; // Starting ID if no employees exist
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return 100;
+        }
+    }
+
     public List<Employee> getAllEmployees() {
         List<Employee> employees = new ArrayList<>();
         String sql = "SELECT * FROM employee";
