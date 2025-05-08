@@ -10,9 +10,16 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import lii.hospitaltrial.component.CardBox;
+import lii.hospitaltrial.databasecrud.DBConnection;
 import lii.hospitaltrial.databasecrud.PatientCRUD;
 import lii.hospitaltrial.model.Patient;
 import lii.hospitaltrial.model.PatientView;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class PatientsController {
 
@@ -87,8 +94,8 @@ public class PatientsController {
     private void deletePatient(PatientView patientView) {
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION);
         confirmation.setTitle("Delete Patient");
-        confirmation.setHeaderText("Delete Patient");
-        confirmation.setContentText("Are you sure you want to delete this patient?");
+        confirmation.setHeaderText("Delete Patient and Admission Records");
+        confirmation.setContentText("This will delete the patient and all associated admission records. Do you want to proceed?");
 
         confirmation.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
@@ -96,7 +103,7 @@ public class PatientsController {
                     if (patientCRUD.deletePatient(patientView.getPatientId())) {
                         loadPatients();
                     }
-                } catch (Exception e) {
+                } catch (SQLException e) {
                     Alert error = new Alert(Alert.AlertType.ERROR);
                     error.setTitle("Error");
                     error.setHeaderText("Cannot Delete Patient");
@@ -125,6 +132,13 @@ public class PatientsController {
                         patientView.getTelephoneNo()
                 );
                 controller.setPatient(patient);
+            } else {
+                // For new patients, generate ID automatically
+                long nextId = patientCRUD.getNextPatientId();
+                Patient newPatient = new Patient();
+                newPatient.setPatientId(nextId);
+                controller.setPatient(newPatient);
+                controller.disablePatientIdField(); // Add this method to PatientDialogController
             }
 
             dialogStage.showAndWait();

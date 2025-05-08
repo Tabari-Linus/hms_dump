@@ -78,23 +78,45 @@ public class PatientCRUD {
         }
     }
 
-    public boolean deletePatient(long patientId) {
-        String sql = "DELETE FROM patient WHERE patient_id = ?";
+    public boolean deletePatient(long patientId) throws SQLException {
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setLong(1, patientId);
-                boolean result = statement.executeUpdate() > 0;
-                connection.commit();
-                return result;
+            try {
+                // Delete associated admission records
+                String deleteAdmissionsSql = "DELETE FROM patientadmission WHERE patient_id = ?";
+                try (PreparedStatement deleteAdmissionsStmt = connection.prepareStatement(deleteAdmissionsSql)) {
+                    deleteAdmissionsStmt.setLong(1, patientId);
+                    deleteAdmissionsStmt.executeUpdate();
+                }
+
+                // Delete the patient
+                String deletePatientSql = "DELETE FROM patient WHERE patient_id = ?";
+                try (PreparedStatement deletePatientStmt = connection.prepareStatement(deletePatientSql)) {
+                    deletePatientStmt.setLong(1, patientId);
+                    boolean result = deletePatientStmt.executeUpdate() > 0;
+                    connection.commit();
+                    return result;
+                }
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw e;
             }
+        }
+    }
+
+    public long getNextPatientId() {
+        String sql = "SELECT MAX(patient_id) FROM patient";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                long maxId = rs.getLong(1);
+                return maxId > 0 ? maxId + 1 : 1001; // Start from 1001 if no existing records
+            }
+            return 1001; // Default starting ID
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return 1001;
         }
     }
 }
