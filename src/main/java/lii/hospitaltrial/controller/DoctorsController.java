@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import lii.hospitaltrial.databasecrud.DBConnection;
 import lii.hospitaltrial.model.DoctorView;
 import lii.hospitaltrial.model.Employee;
 import lii.hospitaltrial.model.Doctor;
@@ -17,6 +18,10 @@ import lii.hospitaltrial.databasecrud.DoctorCRUD;
 import lii.hospitaltrial.databasecrud.EmployeeCRUD;
 
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 public class DoctorsController {
@@ -126,19 +131,44 @@ public class DoctorsController {
     }
 
     private void deleteDoctor(DoctorView doctorView) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Delete Doctor");
-        alert.setHeaderText("Delete Doctor: " + doctorView.getFullName());
-        alert.setContentText("Are you sure you want to delete this doctor?");
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                if (doctorCRUD.deleteDoctor(doctorView.getEmployeeId()) &&
-                        employeeCRUD.deleteEmployee(doctorView.getEmployeeId())) {
-                    loadDoctors(); // Refresh table
+        try {
+            // First check if doctor is a department director
+            String checkSql = "SELECT COUNT(*) FROM department WHERE director_id = ?";
+            try (Connection conn = DBConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(checkSql)) {
+                stmt.setLong(1, doctorView.getEmployeeId());
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next() && rs.getInt(1) > 0) {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Cannot Delete Doctor");
+                    errorAlert.setHeaderText(null);
+                    errorAlert.setContentText("This doctor is assigned as a department director. Please reassign the department before deleting.");
+                    errorAlert.showAndWait();
+                    return;
                 }
             }
-        });
+
+            // If not a director, proceed with deletion confirmation
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Doctor");
+            alert.setHeaderText("Delete Doctor: " + doctorView.getFullName());
+            alert.setContentText("Are you sure you want to delete this doctor?");
+
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    if (doctorCRUD.deleteDoctor(doctorView.getEmployeeId()) &&
+                            employeeCRUD.deleteEmployee(doctorView.getEmployeeId())) {
+                        loadDoctors();
+                    }
+                }
+            });
+        } catch (SQLException e) {
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("Error");
+            errorAlert.setHeaderText(null);
+            errorAlert.setContentText("An error occurred while trying to delete the doctor: " + e.getMessage());
+            errorAlert.showAndWait();
+        }
     }
 
     private void showDoctorDialog(DoctorView doctorView) {
