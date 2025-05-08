@@ -1,0 +1,91 @@
+package lii.hospitaltrial.databasecrud;
+
+import lii.hospitaltrial.model.Speciality;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class SpecialityCRUD {
+
+    public boolean insertSpeciality(Speciality speciality) {
+        String sql = "INSERT INTO speciality (speciality_id, name) VALUES (?, ?)";
+        try (Connection connection = DBConnection.getConnection()) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setLong(1, speciality.getSpecialityId());
+                statement.setString(2, speciality.getName());
+                boolean result = statement.executeUpdate() > 0;
+                connection.commit();
+                return result;
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public List<Speciality> getAllSpecialities() {
+        List<Speciality> specialities = new ArrayList<>();
+        String sql = "SELECT * FROM speciality";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                Speciality speciality = new Speciality(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name")
+                );
+                specialities.add(speciality);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return specialities;
+    }
+
+    public boolean updateSpeciality(Speciality speciality) {
+        String sql = "UPDATE speciality SET name = ? WHERE id = ?";
+        try (Connection connection = DBConnection.getConnection()) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, speciality.getName());
+                statement.setLong(2, speciality.getSpecialityId());
+                boolean result = statement.executeUpdate() > 0;
+                connection.commit();
+                return result;
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteSpeciality(long id) {
+        String sql = "DELETE FROM speciality WHERE id = ?";
+        try (Connection connection = DBConnection.getConnection()) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setLong(1, id);
+                boolean result = statement.executeUpdate() > 0;
+                connection.commit();
+                return result;
+            } catch (SQLException e) {
+                connection.rollback();
+                e.printStackTrace();
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+}
