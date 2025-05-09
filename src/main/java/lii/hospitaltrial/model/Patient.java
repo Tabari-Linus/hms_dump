@@ -21,12 +21,9 @@ public class Patient {
         setFirstName(firstName);
         setSurname(surname);
         setAddress(address);
-        if (patientId != null) {
-            setPatientId(patientId);
-        }
+        setTelephoneNo(telephoneNo);
     }
 
-    // Property accessors (follow JavaFX naming convention)
     public LongProperty patientIdProperty() {
         return patientId;
     }
@@ -47,7 +44,6 @@ public class Patient {
         return telephoneNo;
     }
 
-    // Getters
     public Long getPatientId() {
         return patientId.get();
     }
@@ -68,10 +64,10 @@ public class Patient {
         return telephoneNo.get();
     }
 
-    // Setters
     public void setPatientId(Long patientId) {
         this.patientId.set(patientId != null ? patientId : 0L);
     }
+
     public void setFirstName(String firstName) {
         this.firstName.set(firstName);
     }

@@ -1,8 +1,6 @@
 package lii.hospitaltrial.databasecrud;
 
 import lii.hospitaltrial.model.Patient;
-import lii.hospitaltrial.databasecrud.DBConnection;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +61,8 @@ public class PatientCRUD {
     }
 
     public boolean updatePatient(Patient patient) {
-        String sql = "UPDATE patient SET first_name = ?, surname = ?, address = ?, telephone_no = ? WHERE patient_id = ?";
+        String sql = "UPDATE patient SET first_name = ?, surname = ?, address = ?, telephone_no = ? " +
+                "WHERE patient_id = ?";
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -72,6 +71,7 @@ public class PatientCRUD {
                 statement.setString(3, patient.getAddress());
                 statement.setLong(4, patient.getTelephoneNo());
                 statement.setLong(5, patient.getPatientId());
+
                 boolean result = statement.executeUpdate() > 0;
                 connection.commit();
                 return result;
@@ -90,14 +90,12 @@ public class PatientCRUD {
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try {
-                // Delete associated admission records
                 String deleteAdmissionsSql = "DELETE FROM patientadmission WHERE patient_id = ?";
                 try (PreparedStatement deleteAdmissionsStmt = connection.prepareStatement(deleteAdmissionsSql)) {
                     deleteAdmissionsStmt.setLong(1, patientId);
                     deleteAdmissionsStmt.executeUpdate();
                 }
 
-                // Delete the patient
                 String deletePatientSql = "DELETE FROM patient WHERE patient_id = ?";
                 try (PreparedStatement deletePatientStmt = connection.prepareStatement(deletePatientSql)) {
                     deletePatientStmt.setLong(1, patientId);

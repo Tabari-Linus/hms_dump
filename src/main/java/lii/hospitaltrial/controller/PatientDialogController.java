@@ -51,8 +51,9 @@ public class PatientDialogController {
         firstNameField.setText(patient.getFirstName());
         surnameField.setText(patient.getSurname());
         addressField.setText(patient.getAddress());
-        telephoneNoField.setText(patient.getTelephoneNo() > 0 ?
-                String.valueOf(patient.getTelephoneNo()) : "");
+
+        // Set telephone number properly - handle 0 as valid number
+        telephoneNoField.setText(String.valueOf(patient.getTelephoneNo()));
     }
 
     // Add this method to disable the patient ID field
@@ -64,11 +65,28 @@ public class PatientDialogController {
 
     private void handleSave() {
         if (isInputValid()) {
-            patient.setPatientId(Long.parseLong(patientIdField.getText()));
+            // Only set patient ID if the field is visible and not empty
+            if (patientIdField.isVisible() && !patientIdField.getText().isEmpty()) {
+                patient.setPatientId(Long.parseLong(patientIdField.getText()));
+            }
+
             patient.setFirstName(firstNameField.getText());
             patient.setSurname(surnameField.getText());
             patient.setAddress(addressField.getText());
-            patient.setTelephoneNo(Long.parseLong(telephoneNoField.getText()));
+
+            // Handle phone number directly
+            try {
+                String phoneText = telephoneNoField.getText().trim();
+                patient.setTelephoneNo(Long.parseLong(phoneText));
+            } catch (NumberFormatException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Invalid Input");
+                alert.setHeaderText("Invalid Phone Number");
+                alert.setContentText("Please enter a valid phone number.");
+                alert.showAndWait();
+                return;
+            }
+
             saveClicked = true;
             closeDialog();
         }
@@ -77,22 +95,22 @@ public class PatientDialogController {
     private boolean isInputValid() {
         String errorMessage = "";
 
-        if (firstNameField.getText() == null || firstNameField.getText().trim().isEmpty()) {
+        if (firstNameField.getText() == null || firstNameField.getText().isEmpty()) {
             errorMessage += "First name is required!\n";
         }
-        if (surnameField.getText() == null || surnameField.getText().trim().isEmpty()) {
+        if (surnameField.getText() == null || surnameField.getText().isEmpty()) {
             errorMessage += "Surname is required!\n";
         }
-        if (addressField.getText() == null || addressField.getText().trim().isEmpty()) {
+        if (addressField.getText() == null || addressField.getText().isEmpty()) {
             errorMessage += "Address is required!\n";
         }
-        if (telephoneNoField.getText() == null || telephoneNoField.getText().trim().isEmpty()) {
-            errorMessage += "Telephone number is required!\n";
+        if (telephoneNoField.getText() == null || telephoneNoField.getText().isEmpty()) {
+            errorMessage += "Phone number is required!\n";
         } else {
             try {
-                Long.parseLong(telephoneNoField.getText());
+                Long.parseLong(telephoneNoField.getText().trim());
             } catch (NumberFormatException e) {
-                errorMessage += "Invalid telephone number format!\n";
+                errorMessage += "Phone number must be numeric!\n";
             }
         }
 

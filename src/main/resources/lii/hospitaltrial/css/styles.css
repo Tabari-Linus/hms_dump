@@ -40,10 +40,7 @@
     -fx-background-color: white;
 }
 
-.page-title {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-}
+
 
 .search-field {
     -fx-pref-width: 300px;
@@ -124,4 +121,96 @@
 .card-box .count-label {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
+}
+
+
+.dashboard-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);
+    -fx-padding: 15;
+    -fx-alignment: center;
+    -fx-spacing: 5;
+}
+
+.dashboard-number {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.dashboard-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+}
+
+
+/* Base card style */
+.dashboard-card {
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+    -fx-padding: 20;
+    -fx-alignment: center;
+    -fx-spacing: 10;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+    -fx-border-color: rgba(0,0,0,0.1);
+}
+
+/* Card-specific colors */
+.doctors-card {
+    -fx-background-color: linear-gradient(to bottom right, #4facfe, #00f2fe);
+}
+
+.nurses-card {
+    -fx-background-color: linear-gradient(to bottom right, #f093fb, #f5576c);
+}
+
+.patients-card {
+    -fx-background-color: linear-gradient(to bottom right, #43e97b, #38f9d7);
+}
+
+.departments-card {
+    -fx-background-color: linear-gradient(to bottom right, #ff758c, #ff7eb3);
+}
+
+.wards-card {
+    -fx-background-color: linear-gradient(to bottom right, #a18cd1, #fbc2eb);
+}
+
+.admissions-card {
+    -fx-background-color: linear-gradient(to bottom right, #ffc3a0, #ffafbd);
+}
+
+/* Text styles */
+.dashboard-number {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.2), 2, 0, 0, 1);
+}
+
+.dashboard-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.2), 2, 0, 0, 1);
+}
+
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+/* Make sure the GridPane fills available space */
+.grid-pane {
+    -fx-padding: 0;
+}
+
+/* Add this to your CSS */
+.dashboard-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 15, 0, 0, 0);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-transition: all 0.2s;
 }
