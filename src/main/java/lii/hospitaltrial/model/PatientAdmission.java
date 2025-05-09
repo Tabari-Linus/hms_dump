@@ -21,7 +21,7 @@ public class PatientAdmission {
         this.dateDischarged = dateDischarged;
     }
 
-    // Getters and setters
+
     public void setId(Long id) {
         this.id = id;
     }

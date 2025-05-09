@@ -63,7 +63,7 @@ public class DoctorsController {
         totalDoctorsCard = new CardBox("Total Doctors");
         directorDoctorsCard = new CardBox("Director Doctors");
 
-        // Add some spacing between cards
+
         Region spacer = new Region();
         spacer.setMinWidth(20);
 
@@ -71,10 +71,10 @@ public class DoctorsController {
     }
 
     private void updateSummaryCards() {
-        // Update total doctors count
+
         totalDoctorsCard.setCount(doctorsList.size());
 
-        // Count doctors who are directors
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                      "SELECT COUNT(DISTINCT director_id) FROM department WHERE director_id IS NOT NULL")) {
@@ -142,7 +142,7 @@ public class DoctorsController {
                     continue;
                 }
 
-                // Get specialty name
+
                 String specialityName = "";
                 try {
                     Speciality speciality = specialityCRUD.getSpecialityById(doctor.getSpecialityId());
@@ -186,7 +186,7 @@ public class DoctorsController {
 
     private void deleteDoctor(DoctorView doctorView) {
         try {
-            // First check if doctor is a department director
+
             String checkSql = "SELECT COUNT(*) FROM department WHERE director_id = ?";
             try (Connection conn = DBConnection.getConnection();
                  PreparedStatement stmt = conn.prepareStatement(checkSql)) {
@@ -234,6 +234,7 @@ public class DoctorsController {
             dialogStage.setScene(new Scene(loader.load()));
 
             DoctorDialogController controller = loader.getController();
+
             if (doctorView != null) {
                 Employee employee = employeeCRUD.getEmployeeById(doctorView.getEmployeeId());
                 Doctor doctor = new Doctor(doctorView.getEmployeeId(), doctorView.getSpecialityId());
@@ -247,16 +248,26 @@ public class DoctorsController {
                 Doctor doctor = controller.getDoctor();
 
                 if (doctorView == null) {
-                    employeeCRUD.insertEmployee(employee);
+
+                    long newEmployeeId = employeeCRUD.insertEmployee(employee);
+                    doctor.setEmployeeId(newEmployeeId);
                     doctorCRUD.insertDoctor(doctor);
                 } else {
                     employeeCRUD.updateEmployee(employee);
                     doctorCRUD.updateDoctor(doctor);
                 }
-                loadDoctors(); // Refresh table
+
+                loadDoctors();
             }
+
         } catch (Exception e) {
             e.printStackTrace();
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("Error");
+            errorAlert.setHeaderText("Could not open doctor dialog");
+            errorAlert.setContentText("An error occurred while opening the dialog:\n" + e.getMessage());
+            errorAlert.showAndWait();
         }
     }
+
 }

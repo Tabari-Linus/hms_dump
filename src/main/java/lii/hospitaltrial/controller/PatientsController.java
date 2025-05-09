@@ -49,7 +49,8 @@ public class PatientsController {
 
     private void setupActionsColumn() {
         actionsColumn.setCellFactory(param -> new TableCell<>() {
-            private final Button editButton = new Button("Edit");
+            private final Button editButton = new Button("Edit" );
+
             private final Button deleteButton = new Button("Delete");
             private final HBox buttons = new HBox(5, editButton, deleteButton);
 

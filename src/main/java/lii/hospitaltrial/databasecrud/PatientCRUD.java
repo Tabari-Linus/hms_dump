@@ -29,11 +29,10 @@ public class PatientCRUD {
                 return false;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error inserting patient", e);
+
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -55,7 +54,7 @@ public class PatientCRUD {
                 patients.add(patient);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+           throw new RuntimeException("Error fetching patients", e);
         }
         return patients;
     }
@@ -77,11 +76,9 @@ public class PatientCRUD {
                 return result;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error updating patient", e);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -105,7 +102,7 @@ public class PatientCRUD {
                 }
             } catch (SQLException e) {
                 connection.rollback();
-                throw e;
+                throw new SQLException("Error deleting patient", e);
             }
         }
     }

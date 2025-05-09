@@ -1,69 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.geometry.Insets?>
 
-<VBox spacing="20" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="lii.hospitaltrial.controller.DashboardController">
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="20" stylesheets="@../css/styles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="lii.hospitaltrial.controller.DashboardController">
     <padding>
-        <Insets top="20" right="20" bottom="20" left="20"/>
+        <Insets bottom="20" left="20" right="20" top="20" />
     </padding>
 
-    <Label text="Dashboard Overview" styleClass="page-title"/>
+    <Label styleClass="page-title" text="Dashboard Overview" />
 
     <GridPane hgap="20" vgap="20" GridPane.hgrow="ALWAYS">
         <columnConstraints>
-            <ColumnConstraints hgrow="ALWAYS" minWidth="100" prefWidth="200"/>
-            <ColumnConstraints hgrow="ALWAYS" minWidth="100" prefWidth="200"/>
-            <ColumnConstraints hgrow="ALWAYS" minWidth="100" prefWidth="200"/>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="100" prefWidth="200" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="100" prefWidth="200" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="100" prefWidth="200" />
         </columnConstraints>
         <rowConstraints>
-            <RowConstraints vgrow="ALWAYS" minHeight="100" prefHeight="150"/>
-            <RowConstraints vgrow="ALWAYS" minHeight="100" prefHeight="150"/>
+            <RowConstraints minHeight="100" prefHeight="150" vgrow="ALWAYS" />
+            <RowConstraints minHeight="100" prefHeight="150" vgrow="ALWAYS" />
         </rowConstraints>
 
 
-        <StackPane styleClass="dashboard-card doctors-card" GridPane.columnIndex="0" GridPane.rowIndex="0"
-                   GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" onMouseClicked="#handleDoctorsClick">
-            <VBox alignment="CENTER" spacing="10">
-                <Label fx:id="totalDoctors" text="0" styleClass="dashboard-number"/>
-                <Label text="Total Doctors" styleClass="dashboard-label"/>
+        <StackPane onMouseClicked="#handleDoctorsClick" styleClass="dashboard-card doctors-card" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
+            <VBox alignment="CENTER" opacity="0.47" spacing="10" style="-fx-background-color: #191970; -fx-background-radius: 5;">
+                <Label fx:id="totalDoctors" styleClass="dashboard-number" text="0" />
+                <Label styleClass="dashboard-label" text="Total Doctors" />
             </VBox>
         </StackPane>
 
         <!-- Nurses Card -->
-        <VBox styleClass="dashboard-card nurses-card" GridPane.columnIndex="1" GridPane.rowIndex="0"
-              GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-            <Label fx:id="totalNurses" text="0" styleClass="dashboard-number"/>
-            <Label text="Total Nurses" styleClass="dashboard-label"/>
+        <VBox alignment="CENTER" opacity="0.81" style="-fx-background-color: #191970; -fx-background-radius: 5;" styleClass="dashboard-card nurses-card" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
+            <Label fx:id="totalNurses" styleClass="dashboard-number" text="0" />
+            <Label styleClass="dashboard-label" text="Total Nurses" />
         </VBox>
 
         <!-- Patients Card -->
-        <VBox styleClass="dashboard-card patients-card" GridPane.columnIndex="2" GridPane.rowIndex="0"
-              GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-            <Label fx:id="totalPatients" text="0" styleClass="dashboard-number"/>
-            <Label text="Total Patients" styleClass="dashboard-label"/>
+        <VBox alignment="CENTER" style="-fx-background-color: #191970; -fx-background-radius: 5;" styleClass="dashboard-card patients-card" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
+            <Label fx:id="totalPatients" styleClass="dashboard-number" text="0" />
+            <Label styleClass="dashboard-label" text="Total Patients" />
         </VBox>
 
         <!-- Departments Card -->
-        <VBox styleClass="dashboard-card departments-card" GridPane.columnIndex="0" GridPane.rowIndex="1"
-              GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-            <Label fx:id="totalDepartments" text="0" styleClass="dashboard-number"/>
-            <Label text="Departments" styleClass="dashboard-label"/>
+        <VBox alignment="CENTER" opacity="0.47" style="-fx-background-color: #191970; -fx-background-radius: 5;" styleClass="dashboard-card departments-card" GridPane.columnIndex="0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+            <Label fx:id="totalDepartments" styleClass="dashboard-number" text="0" />
+            <Label styleClass="dashboard-label" text="Departments" />
         </VBox>
 
         <!-- Wards Card -->
-        <VBox styleClass="dashboard-card wards-card" GridPane.columnIndex="1" GridPane.rowIndex="1"
-              GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-            <Label fx:id="totalWards" text="0" styleClass="dashboard-number"/>
-            <Label text="Total Wards" styleClass="dashboard-label"/>
+        <VBox alignment="CENTER" opacity="0.81" style="-fx-background-color: #191970; -fx-background-radius: 5;" styleClass="dashboard-card wards-card" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+            <Label fx:id="totalWards" styleClass="dashboard-number" text="0" />
+            <Label styleClass="dashboard-label" text="Total Wards" />
         </VBox>
 
         <!-- Admissions Card -->
-        <VBox styleClass="dashboard-card admissions-card" GridPane.columnIndex="2" GridPane.rowIndex="1"
-              GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-            <Label fx:id="totalAdmissions" text="0" styleClass="dashboard-number"/>
-            <Label text="Current Admissions" styleClass="dashboard-label"/>
+        <VBox alignment="CENTER" style="-fx-background-color: #191970; -fx-background-radius: 5;" styleClass="dashboard-card admissions-card" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+            <Label fx:id="totalAdmissions" styleClass="dashboard-number" text="0" />
+            <Label styleClass="dashboard-label" text="Current Admissions" />
         </VBox>
     </GridPane>
 </VBox>

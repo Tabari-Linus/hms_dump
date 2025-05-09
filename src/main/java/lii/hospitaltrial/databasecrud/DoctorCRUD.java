@@ -9,31 +9,22 @@ import java.util.List;
 
 public class DoctorCRUD {
 
-    public boolean insertDoctor(Doctor doctor) {
-        String sql = "INSERT INTO doctor (employee_id, speciality_id) VALUES (?, ?)";
-        try (Connection connection = DBConnection.getConnection()) {
-            connection.setAutoCommit(false);
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setLong(1, doctor.getEmployeeId());
-                statement.setLong(2, doctor.getSpecialityId());
 
-                int rowsAffected = statement.executeUpdate();
-                if (rowsAffected > 0) {
-                    connection.commit();
-                    return true;
-                }
-                connection.rollback();
-                return false;
-            } catch (SQLException e) {
-                connection.rollback();
-                e.printStackTrace();
-                return false;
+
+        public void insertDoctor(Doctor doctor) throws SQLException {
+            String sql = "INSERT INTO doctor (employee_id, speciality_id) VALUES (?, ?)";
+
+            try (Connection conn = DBConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+                stmt.setLong(1, doctor.getEmployeeId());
+                stmt.setLong(2, doctor.getSpecialityId());
+
+                stmt.executeUpdate();
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
-    }
+
+
 
     public List<Doctor> getAllDoctors() {
         List<Doctor> doctors = new ArrayList<>();
@@ -49,7 +40,7 @@ public class DoctorCRUD {
                 doctors.add(doctor);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error fetching doctors", e);
         }
         return doctors;
     }
@@ -66,8 +57,8 @@ public class DoctorCRUD {
                 return result;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error updating doctor", e);
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -86,8 +77,7 @@ public class DoctorCRUD {
                 return result;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error deleting doctor", e);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -121,7 +111,7 @@ public class DoctorCRUD {
                 doctors.add(doctor);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error fetching doctors with specialities", e);
         }
         return doctors;
     }

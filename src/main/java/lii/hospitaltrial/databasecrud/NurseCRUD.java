@@ -22,11 +22,10 @@ public class NurseCRUD {
                 return result;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error inserting nurse", e);
+
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -47,7 +46,7 @@ public class NurseCRUD {
                 nurses.add(nurse);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error fetching nurses", e);
         }
         return nurses;
     }
@@ -66,17 +65,15 @@ public class NurseCRUD {
                 return result;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error updating nurse", e);
+
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }
 
     public boolean deleteNurse(long employeeId) throws SQLException {
-        // First check if nurse is a supervisor
         String checkSql = "SELECT ward_id FROM ward WHERE supervisor_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
@@ -86,11 +83,9 @@ public class NurseCRUD {
             ResultSet rs = checkStmt.executeQuery();
 
             if (rs.next()) {
-                // Nurse is a supervisor, can't delete
                 throw new SQLException("Cannot delete nurse: Still assigned as supervisor to ward " + rs.getLong("ward_id"));
             }
 
-            // If not a supervisor, proceed with delete
             String deleteSql = "DELETE FROM nurse WHERE employee_id = ?";
             try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
                 deleteStmt.setLong(1, employeeId);

@@ -22,7 +22,7 @@ public class DoctorView {
         this.specialityName = specialityName;
     }
 
-    // Getters only since this is a view model
+
     public long getEmployeeId() { return employeeId; }
     public String getFirstName() { return firstName; }
     public String getSurname() { return surname; }

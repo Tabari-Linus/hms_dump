@@ -29,11 +29,10 @@ public class DepartmentCRUD {
                 return false;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error inserting department", e);
+
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -54,7 +53,7 @@ public class DepartmentCRUD {
                 departments.add(department);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error fetching departments", e);
         }
         return departments;
     }
@@ -73,12 +72,11 @@ public class DepartmentCRUD {
                 return result;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error updating department", e);
+
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Error connecting to the database", e);
         }
     }
 
@@ -93,12 +91,10 @@ public class DepartmentCRUD {
                 return result;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error deleting department", e);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
+           throw new RuntimeException("Error connecting to the database", e);
         }
     }
 
@@ -119,7 +115,7 @@ public class DepartmentCRUD {
                 );
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error retrieving department with ID: " + departmentId, e);
         }
         return department;
     }

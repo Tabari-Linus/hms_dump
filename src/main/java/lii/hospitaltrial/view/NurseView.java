@@ -26,7 +26,7 @@ public class NurseView {
         this.departmentId = nurse.getDepartmentId();
     }
 
-    // Existing getters
+
     public long getEmployeeId() { return employeeId; }
     public String getFirstName() { return firstName; }
     public String getSurname() { return surname; }
@@ -35,7 +35,7 @@ public class NurseView {
     public long getTelephoneNo() { return telephoneNo; }
     public String getDepartmentName() { return department; }
 
-    // New getters for nurse-specific fields
+
     public String getRotation() { return rotation; }
     public double getSalary() { return salary; }
     public long getDepartmentId() { return departmentId; }

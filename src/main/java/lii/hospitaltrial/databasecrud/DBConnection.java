@@ -15,7 +15,7 @@ public class DBConnection {
         try {
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error connecting to the database", e);
         }
         return connection;
     }
@@ -25,7 +25,7 @@ public class DBConnection {
             try {
                 connection.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Error closing the database connection", e);
             }
         }
     }

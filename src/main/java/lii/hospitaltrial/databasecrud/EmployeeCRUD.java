@@ -8,36 +8,30 @@ import java.util.List;
 
 public class EmployeeCRUD {
 
-    public boolean insertEmployee(Employee employee) {
-        String sql = "INSERT INTO employee (first_name, surname, address, telephone_no) " +
-                "VALUES (?, ?, ?, ?) RETURNING employee_id";
-        try (Connection connection = DBConnection.getConnection()) {
-            connection.setAutoCommit(false);
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setString(1, employee.getFirstName());
-                statement.setString(2, employee.getSurname());
-                statement.setString(3, employee.getAddress());
-                statement.setLong(4, employee.getTelephoneNo());
+    public long insertEmployee(Employee employee) throws SQLException {
+        String sql = "INSERT INTO employee (first_name, surname, address, telephone_no) VALUES (?, ?, ?, ?)";
 
-                try (ResultSet rs = statement.executeQuery()) {
-                    if (rs.next()) {
-                        employee.setEmployeeId(rs.getLong(1));
-                        connection.commit();
-                        return true;
-                    }
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, employee.getFirstName());
+            stmt.setString(2, employee.getSurname());
+            stmt.setString(3, employee.getAddress());
+            stmt.setLong(4, employee.getTelephoneNo());
+
+            int rows = stmt.executeUpdate();
+            if (rows == 0) throw new SQLException("Insert employee failed, no rows affected.");
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getLong(1);
+                } else {
+                    throw new SQLException("Insert employee failed, no ID obtained.");
                 }
-                connection.rollback();
-                return false;
-            } catch (SQLException e) {
-                connection.rollback();
-                e.printStackTrace();
-                return false;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
         }
     }
+
     public long getLastEmployeeId() {
         String sql = "SELECT MAX(employee_id) FROM employee";
         try (Connection connection = DBConnection.getConnection();
@@ -46,10 +40,9 @@ public class EmployeeCRUD {
             if (resultSet.next()) {
                 return resultSet.getLong(1);
             }
-            return 100; // Starting ID if no employees exist
-        } catch (SQLException e) {
-            e.printStackTrace();
             return 100;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching last employee ID", e);
         }
     }
 
@@ -70,7 +63,7 @@ public class EmployeeCRUD {
                 employees.add(employee);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Error fetching employees", e);
         }
         return employees;
     }
@@ -122,8 +115,8 @@ public class EmployeeCRUD {
                 return result;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error updating employee", e);
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -142,8 +135,8 @@ public class EmployeeCRUD {
                 return result;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error deleting employee", e);
+
             }
         } catch (SQLException e) {
             e.printStackTrace();

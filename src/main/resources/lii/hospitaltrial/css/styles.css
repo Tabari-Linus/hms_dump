@@ -109,43 +109,46 @@
 
 .card-box {
     -fx-background-color: white;
+    -fx-background-color: #191970;
     -fx-background-radius: 5;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
     -fx-padding: 15;
 }
 
 .card-box .label {
-    -fx-text-fill: #333333;
+    -fx-font-size: 32px;
+        -fx-font-weight: bold;
+        -fx-text-fill: white;
 }
 
 .card-box .count-label {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
+    -fx-font-size: 32px;
+        -fx-font-weight: bold;
+        -fx-text-fill: white;
 }
 
 
-.dashboard-card {
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 5;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 0);
-    -fx-padding: 15;
-    -fx-alignment: center;
-    -fx-spacing: 5;
-}
-
+/* Text styles */
 .dashboard-number {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.2), 2, 0, 0, 1);
+}
+
+.dashboard-label {
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.2), 2, 0, 0, 1);
+}
+
+.page-title {
     -fx-font-size: 24px;
     -fx-font-weight: bold;
     -fx-text-fill: #2c3e50;
 }
 
-.dashboard-label {
-    -fx-font-size: 14px;
-    -fx-text-fill: #7f8c8d;
-}
 
-
-/* Base card style */
 .dashboard-card {
     -fx-background-radius: 10;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
@@ -157,7 +160,7 @@
     -fx-border-color: rgba(0,0,0,0.1);
 }
 
-/* Card-specific colors */
+/* Card-specific colors - make sure these come AFTER the base .dashboard-card */
 .doctors-card {
     -fx-background-color: linear-gradient(to bottom right, #4facfe, #00f2fe);
 }
@@ -182,26 +185,19 @@
     -fx-background-color: linear-gradient(to bottom right, #ffc3a0, #ffafbd);
 }
 
-/* Text styles */
-.dashboard-number {
+/* Text styles - updated with higher specificity */
+.dashboard-card .dashboard-number {
     -fx-font-size: 32px;
     -fx-font-weight: bold;
     -fx-text-fill: white;
     -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.2), 2, 0, 0, 1);
 }
 
-.dashboard-label {
+.dashboard-card .dashboard-label {
     -fx-font-size: 16px;
     -fx-text-fill: white;
     -fx-effect: dropshadow(one-pass-box, rgba(0,0,0,0.2), 2, 0, 0, 1);
 }
-
-.page-title {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2c3e50;
-}
-
 /* Make sure the GridPane fills available space */
 .grid-pane {
     -fx-padding: 0;
@@ -214,3 +210,4 @@
     -fx-scale-y: 1.02;
     -fx-transition: all 0.2s;
 }
+

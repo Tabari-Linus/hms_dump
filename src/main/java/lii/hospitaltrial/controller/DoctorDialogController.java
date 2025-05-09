@@ -114,9 +114,20 @@ public class DoctorDialogController {
                     specialityComboBox.getValue() == null) {
                 throw new IllegalArgumentException("All fields are required.");
             }
+            long employeeId;
+            try {
+                employeeId = Long.parseLong(employeeIdField.getText());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Employee ID must be numeric.");
+            }
+            long telephoneNo;
+            try{
+                telephoneNo = Long.parseLong(telephoneNoField.getText());
+            }
+            catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Telephone No must be numeric.");
+            }
 
-            long employeeId = Long.parseLong(employeeIdField.getText());
-            long telephoneNo = Long.parseLong(telephoneNoField.getText());
 
             if (employee == null) {
                 employee = new Employee();

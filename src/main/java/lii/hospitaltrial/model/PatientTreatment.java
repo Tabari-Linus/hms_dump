@@ -20,12 +20,12 @@ public class PatientTreatment {
         this.patientAdmissionId = patientAdmissionId;
     }
 
-    // Add the missing setter
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    // Getters
+
     public Long getId() { return id; }
     public Long getPatientId() { return patientId; }
     public Long getDoctorId() { return doctorId; }

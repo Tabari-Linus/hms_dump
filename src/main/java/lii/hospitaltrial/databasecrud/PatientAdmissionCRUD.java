@@ -42,11 +42,10 @@ public class PatientAdmissionCRUD {
                 return false;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error inserting patient admission", e);
+
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -115,10 +114,9 @@ public class PatientAdmissionCRUD {
                 return result;
             } catch (SQLException e) {
                 connection.rollback();
-                throw e;
+                throw new RuntimeException("Error updating patient admission", e);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -134,11 +132,10 @@ public class PatientAdmissionCRUD {
                 return result;
             } catch (SQLException e) {
                 connection.rollback();
-                e.printStackTrace();
-                return false;
+                throw new RuntimeException("Error deleting patient admission", e);
+
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -191,7 +188,6 @@ public class PatientAdmissionCRUD {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
             return Collections.emptyList();
         }
         return admissions;
