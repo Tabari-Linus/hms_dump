@@ -9,18 +9,25 @@ import java.util.List;
 public class WardCRUD {
 
     public boolean insertWard(Ward ward) {
-        String sql = "INSERT INTO ward (ward_id, department_id, ward_number, supervisor_id, bed_count) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO ward (department_id, ward_number, supervisor_id, bed_count) " +
+                "VALUES (?, ?, ?, ?) RETURNING ward_id";
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setLong(1, ward.getWardId());
-                statement.setLong(2, ward.getDepartmentId());
-                statement.setInt(3, ward.getWardNumber());
-                statement.setLong(4, ward.getSupervisorId());
-                statement.setInt(5, ward.getBedCount());
-                boolean result = statement.executeUpdate() > 0;
-                connection.commit();
-                return result;
+                statement.setLong(1, ward.getDepartmentId());
+                statement.setInt(2, ward.getWardNumber());
+                statement.setLong(3, ward.getSupervisorId());
+                statement.setInt(4, ward.getBedCount());
+
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        ward.setWardId(rs.getLong(1));
+                        connection.commit();
+                        return true;
+                    }
+                }
+                connection.rollback();
+                return false;
             } catch (SQLException e) {
                 connection.rollback();
                 e.printStackTrace();
@@ -96,5 +103,24 @@ public class WardCRUD {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public Ward getWardById(Long wardId) throws Exception {
+        String sql = "SELECT * FROM ward WHERE ward_id = ?";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, wardId);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return new Ward(
+                        rs.getLong("ward_id"),
+                        rs.getLong("department_id"),
+                        rs.getInt("ward_number"),
+                        rs.getLong("supervisor_id"),
+                        rs.getInt("bed_count")
+                );
+            }
+        }
+        return null;
     }
 }

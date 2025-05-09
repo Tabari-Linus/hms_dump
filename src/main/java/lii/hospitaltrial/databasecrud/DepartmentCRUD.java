@@ -9,17 +9,24 @@ import java.util.List;
 public class DepartmentCRUD {
 
     public boolean insertDepartment(Department department) {
-        String sql = "INSERT INTO department (department_code, department_name, building, director_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO department (department_name, building, director_id) " +
+                "VALUES (?, ?, ?) RETURNING department_code";
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setLong(1, department.getDepartmentCode());
-                statement.setString(2, department.getDepartmentName());
-                statement.setString(3, department.getBuilding());
-                statement.setLong(4, department.getDirectorId());
-                boolean result = statement.executeUpdate() > 0;
-                connection.commit();
-                return result;
+                statement.setString(1, department.getDepartmentName());
+                statement.setString(2, department.getBuilding());    // Changed from location to building
+                statement.setLong(3, department.getDirectorId());
+
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        department.setDepartmentCode(rs.getLong(1));
+                        connection.commit();
+                        return true;
+                    }
+                }
+                connection.rollback();
+                return false;
             } catch (SQLException e) {
                 connection.rollback();
                 e.printStackTrace();

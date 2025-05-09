@@ -9,15 +9,20 @@ import java.util.List;
 public class SpecialityCRUD {
 
     public boolean insertSpeciality(Speciality speciality) {
-        String sql = "INSERT INTO speciality (speciality_id, name) VALUES (?, ?)";
+        String sql = "INSERT INTO speciality (name) VALUES (?) RETURNING speciality_id";
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setLong(1, speciality.getSpecialityId());
-                statement.setString(2, speciality.getName());
-                boolean result = statement.executeUpdate() > 0;
-                connection.commit();
-                return result;
+                statement.setString(1, speciality.getName());
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        speciality.setSpecialityId(rs.getLong(1));
+                        connection.commit();
+                        return true;
+                    }
+                }
+                connection.rollback();
+                return false;
             } catch (SQLException e) {
                 connection.rollback();
                 e.printStackTrace();
@@ -51,7 +56,7 @@ public class SpecialityCRUD {
     }
 
     public boolean updateSpeciality(Speciality speciality) {
-        String sql = "UPDATE speciality SET name = ? WHERE id = ?";
+        String sql = "UPDATE speciality SET name = ? WHERE speciality_id = ?";
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -72,7 +77,7 @@ public class SpecialityCRUD {
     }
 
     public boolean deleteSpeciality(long id) {
-        String sql = "DELETE FROM speciality WHERE id = ?";
+        String sql = "DELETE FROM speciality WHERE speciality_id = ?";
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {

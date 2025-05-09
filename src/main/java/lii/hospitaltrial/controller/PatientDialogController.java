@@ -1,8 +1,10 @@
 package lii.hospitaltrial.controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lii.hospitaltrial.model.Patient;
@@ -25,9 +27,27 @@ public class PatientDialogController {
         cancelButton.setOnAction(e -> handleCancel());
     }
 
+    public void hidePatientIdField() {
+        if (patientIdField != null) {
+            patientIdField.setVisible(false);
+            patientIdField.setManaged(false); // Removes the space taken by the field
+        }
+        // Also hide the corresponding label if you have one
+        Node idLabelNode = patientIdField.getParent().lookup("#patientIdLabel");
+        if (idLabelNode instanceof Label idLabel) {
+            idLabel.setVisible(false);
+            idLabel.setManaged(false);
+        }
+    }
+
     public void setPatient(Patient patient) {
         this.patient = patient;
-        patientIdField.setText(String.valueOf(patient.getPatientId()));
+        if (patient.getPatientId() != null) {
+            patientIdField.setText(String.valueOf(patient.getPatientId()));
+            patientIdField.setDisable(true);
+        } else {
+            hidePatientIdField();
+        }
         firstNameField.setText(patient.getFirstName());
         surnameField.setText(patient.getSurname());
         addressField.setText(patient.getAddress());

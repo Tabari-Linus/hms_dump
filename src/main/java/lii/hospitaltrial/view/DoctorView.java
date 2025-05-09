@@ -1,4 +1,7 @@
-package lii.hospitaltrial.model;
+package lii.hospitaltrial.view;
+
+import lii.hospitaltrial.model.Doctor;
+import lii.hospitaltrial.model.Employee;
 
 public class DoctorView {
     private long employeeId;

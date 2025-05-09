@@ -1,22 +1,21 @@
 package lii.hospitaltrial.model;
 
 public class Speciality {
-    private long specialityId;
+    private Long specialityId;
     private String name;
-
 
     public Speciality() {}
 
-    public Speciality(long specialityId, String name) {
+    public Speciality(Long specialityId, String name) {
         this.specialityId = specialityId;
         this.name = name;
     }
 
-    public long getSpecialityId() {
+    public Long getSpecialityId() {
         return specialityId;
     }
 
-    public void setSpecialityId(long specialityId) {
+    public void setSpecialityId(Long specialityId) {
         this.specialityId = specialityId;
     }
 

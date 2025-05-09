@@ -1,7 +1,6 @@
 package lii.hospitaltrial.databasecrud;
 
 import lii.hospitaltrial.model.Employee;
-import lii.hospitaltrial.model.PatientAdmission;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,18 +9,25 @@ import java.util.List;
 public class EmployeeCRUD {
 
     public boolean insertEmployee(Employee employee) {
-        String sql = "INSERT INTO employee (employee_id, first_name, surname, address, telephone_no) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO employee (first_name, surname, address, telephone_no) " +
+                "VALUES (?, ?, ?, ?) RETURNING employee_id";
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setLong(1, employee.getEmployeeId());
-                statement.setString(2, employee.getFirstName());
-                statement.setString(3, employee.getSurname());
-                statement.setString(4, employee.getAddress());
-                statement.setLong(5, employee.getTelephoneNo());
-                boolean result = statement.executeUpdate() > 0;
-                connection.commit();
-                return result;
+                statement.setString(1, employee.getFirstName());
+                statement.setString(2, employee.getSurname());
+                statement.setString(3, employee.getAddress());
+                statement.setLong(4, employee.getTelephoneNo());
+
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        employee.setEmployeeId(rs.getLong(1));
+                        connection.commit();
+                        return true;
+                    }
+                }
+                connection.rollback();
+                return false;
             } catch (SQLException e) {
                 connection.rollback();
                 e.printStackTrace();
@@ -32,7 +38,6 @@ public class EmployeeCRUD {
             return false;
         }
     }
-
     public long getLastEmployeeId() {
         String sql = "SELECT MAX(employee_id) FROM employee";
         try (Connection connection = DBConnection.getConnection();

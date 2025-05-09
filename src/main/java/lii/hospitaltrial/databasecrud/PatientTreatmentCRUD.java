@@ -8,20 +8,26 @@ import java.util.List;
 
 public class PatientTreatmentCRUD {
 
-    public boolean insertTreatment(PatientTreatment treatment) {
-        String sql = "INSERT INTO patienttreatment (id, patient_id, doctor_id, treatment_date, remarks, patientadmission_id) VALUES (?, ?, ?, ?, ?, ?)";
+    public boolean insertPatientTreatment(PatientTreatment treatment) {
+        String sql = "INSERT INTO patienttreatment (patient_id, doctor_id, treatment_date, remarks, patientadmission_id) " +
+                "VALUES (?, ?, ?, ?, ?) RETURNING id";
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setLong(1, treatment.getId());
-                statement.setLong(2, treatment.getPatientId());
-                statement.setLong(3, treatment.getDoctorId());
-                statement.setDate(4, treatment.getTreatmentDate());
-                statement.setString(5, treatment.getRemarks());
-                statement.setLong(6, treatment.getPatientAdmissionId());
-                boolean result = statement.executeUpdate() > 0;
-                connection.commit();
-                return result;
+                statement.setLong(1, treatment.getPatientId());
+                statement.setLong(2, treatment.getDoctorId());
+                statement.setDate(3, Date.valueOf(treatment.getTreatmentDate()));
+                statement.setString(4, treatment.getRemarks());
+                statement.setLong(5, treatment.getPatientAdmissionId());
+
+                ResultSet rs = statement.executeQuery();
+                if (rs.next()) {
+                    treatment.setId(rs.getLong(1));
+                    connection.commit();
+                    return true;
+                }
+                connection.rollback();
+                return false;
             } catch (SQLException e) {
                 connection.rollback();
                 e.printStackTrace();
@@ -32,6 +38,7 @@ public class PatientTreatmentCRUD {
             return false;
         }
     }
+
 
     public List<PatientTreatment> getAllPatientTreatments() {
         List<PatientTreatment> treatments = new ArrayList<>();
@@ -44,7 +51,7 @@ public class PatientTreatmentCRUD {
                         resultSet.getLong("id"),
                         resultSet.getLong("patient_id"),
                         resultSet.getLong("doctor_id"),
-                        resultSet.getDate("treatment_date"),
+                        resultSet.getDate("treatment_date").toLocalDate(),  // convert to LocalDate
                         resultSet.getString("remarks"),
                         resultSet.getLong("patientadmission_id")
                 );
@@ -63,7 +70,7 @@ public class PatientTreatmentCRUD {
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setLong(1, treatment.getPatientId());
                 statement.setLong(2, treatment.getDoctorId());
-                statement.setDate(3, treatment.getTreatmentDate());
+                statement.setDate(3, Date.valueOf(treatment.getTreatmentDate()));
                 statement.setString(4, treatment.getRemarks());
                 statement.setLong(5, treatment.getPatientAdmissionId());
                 statement.setLong(6, treatment.getId());
@@ -102,7 +109,25 @@ public class PatientTreatmentCRUD {
     }
 
 
-
+    public List<PatientTreatment> getAllTreatments() throws Exception {
+        List<PatientTreatment> treatments = new ArrayList<>();
+        String sql = "SELECT * FROM patienttreatment";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                treatments.add(new PatientTreatment(
+                        rs.getLong("id"),
+                        rs.getLong("patient_id"),
+                        rs.getLong("doctor_id"),
+                        rs.getDate("treatment_date").toLocalDate(),
+                        rs.getString("remarks"),
+                        rs.getLong("patientadmission_id")
+                ));
+            }
+        }
+        return treatments;
+    }
 
 
 
@@ -125,7 +150,7 @@ public class PatientTreatmentCRUD {
                             resultSet.getLong("id"),
                             resultSet.getLong("patient_id"),
                             resultSet.getLong("doctor_id"),
-                            resultSet.getDate("treatment_date"),
+                            resultSet.getDate("treatment_date").toLocalDate(),
                             resultSet.getString("remarks"),
                             resultSet.getLong("patientadmission_id"));
                     treatments.add(treatment);

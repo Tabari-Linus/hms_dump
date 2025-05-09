@@ -16,9 +16,14 @@ public class DoctorCRUD {
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setLong(1, doctor.getEmployeeId());
                 statement.setLong(2, doctor.getSpecialityId());
-                boolean result = statement.executeUpdate() > 0;
-                connection.commit();
-                return result;
+
+                int rowsAffected = statement.executeUpdate();
+                if (rowsAffected > 0) {
+                    connection.commit();
+                    return true;
+                }
+                connection.rollback();
+                return false;
             } catch (SQLException e) {
                 connection.rollback();
                 e.printStackTrace();
@@ -120,4 +125,23 @@ public class DoctorCRUD {
         }
         return doctors;
     }
+
+    public List<Doctor> getDoctorsBySpeciality(Long specialityId) throws Exception {
+        List<Doctor> doctors = new ArrayList<>();
+        String sql = "SELECT * FROM doctor WHERE speciality_id = ?";
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setLong(1, specialityId);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                doctors.add(new Doctor(
+                        rs.getLong("employee_id"),
+                        rs.getLong("speciality_id")
+                ));
+            }
+        }
+        return doctors;
+    }
+
+
 }

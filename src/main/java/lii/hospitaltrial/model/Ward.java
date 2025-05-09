@@ -1,7 +1,7 @@
 package lii.hospitaltrial.model;
 
 public class Ward {
-    private long wardId;
+    private Long wardId;
     private long departmentId;
     private int wardNumber;
     private long supervisorId;
@@ -9,7 +9,7 @@ public class Ward {
 
     public Ward() {}
 
-    public Ward(long wardId, long departmentId, int wardNumber, long supervisorId, int bedCount) {
+    public Ward(Long wardId, long departmentId, int wardNumber, long supervisorId, int bedCount) {
         this.wardId = wardId;
         this.departmentId = departmentId;
         this.wardNumber = wardNumber;

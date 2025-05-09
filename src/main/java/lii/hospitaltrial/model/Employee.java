@@ -1,7 +1,7 @@
 package lii.hospitaltrial.model;
 
 public class Employee {
-    private long employeeId;
+    private Long employeeId;
     private String firstName;
     private String surname;
     private String address;
@@ -9,7 +9,7 @@ public class Employee {
 
     public Employee() {}
 
-    public Employee(long employeeId, String firstName, String surname, String address, long telephoneNo) {
+    public Employee(Long employeeId, String firstName, String surname, String address, long telephoneNo) {
         this.employeeId = employeeId;
         this.firstName = firstName;
         this.surname = surname;

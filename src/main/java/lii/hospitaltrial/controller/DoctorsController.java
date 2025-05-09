@@ -12,7 +12,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import lii.hospitaltrial.databasecrud.DBConnection;
-import lii.hospitaltrial.model.DoctorView;
+import lii.hospitaltrial.view.DoctorView;
 import lii.hospitaltrial.model.Employee;
 import lii.hospitaltrial.model.Doctor;
 import lii.hospitaltrial.databasecrud.DoctorCRUD;

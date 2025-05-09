@@ -10,19 +10,13 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import lii.hospitaltrial.component.CardBox;
-import lii.hospitaltrial.databasecrud.DBConnection;
 import lii.hospitaltrial.databasecrud.PatientCRUD;
 import lii.hospitaltrial.model.Patient;
-import lii.hospitaltrial.model.PatientView;
+import lii.hospitaltrial.view.PatientView;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PatientsController {
-
     @FXML private TableView<PatientView> patientsTable;
     @FXML private TableColumn<PatientView, Long> idColumn;
     @FXML private TableColumn<PatientView, String> firstNameColumn;
@@ -50,7 +44,6 @@ public class PatientsController {
         phoneColumn.setCellValueFactory(new PropertyValueFactory<>("telephoneNo"));
 
         setupActionsColumn();
-
         patientsTable.setItems(patientList);
     }
 
@@ -104,11 +97,7 @@ public class PatientsController {
                         loadPatients();
                     }
                 } catch (SQLException e) {
-                    Alert error = new Alert(Alert.AlertType.ERROR);
-                    error.setTitle("Error");
-                    error.setHeaderText("Cannot Delete Patient");
-                    error.setContentText(e.getMessage());
-                    error.showAndWait();
+                    showError("Cannot Delete Patient", e.getMessage());
                 }
             }
         });
@@ -133,27 +122,37 @@ public class PatientsController {
                 );
                 controller.setPatient(patient);
             } else {
-                // For new patients, generate ID automatically
-                long nextId = patientCRUD.getNextPatientId();
+                // For new patients, let the database handle ID generation
                 Patient newPatient = new Patient();
-                newPatient.setPatientId(nextId);
                 controller.setPatient(newPatient);
-                controller.disablePatientIdField(); // Add this method to PatientDialogController
+                controller.hidePatientIdField(); // Hide ID field for new patients
             }
 
             dialogStage.showAndWait();
 
             if (controller.isSaveClicked()) {
                 Patient patient = controller.getPatient();
-                if (patientView == null) {
-                    patientCRUD.insertPatient(patient);
-                } else {
-                    patientCRUD.updatePatient(patient);
+                try {
+                    if (patientView == null) {
+                        patientCRUD.insertPatient(patient);
+                    } else {
+                        patientCRUD.updatePatient(patient);
+                    }
+                    loadPatients();
+                } catch (RuntimeException e) {  // Changed to RuntimeException
+                    showError("Database Error", "Failed to save patient: " + e.getMessage());
                 }
-                loadPatients();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            showError("Dialog Error", "Failed to open patient dialog: " + e.getMessage());
         }
+    }
+
+    private void showError(String header, String content) {
+        Alert error = new Alert(Alert.AlertType.ERROR);
+        error.setTitle("Error");
+        error.setHeaderText(header);
+        error.setContentText(content);
+        error.showAndWait();
     }
 }

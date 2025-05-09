@@ -5,25 +5,20 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import lii.hospitaltrial.databasecrud.DBConnection;
 import lii.hospitaltrial.databasecrud.EmployeeCRUD;
 import lii.hospitaltrial.databasecrud.NurseCRUD;
 import lii.hospitaltrial.databasecrud.DepartmentCRUD;
 import lii.hospitaltrial.model.Employee;
 import lii.hospitaltrial.model.Nurse;
-import lii.hospitaltrial.model.NurseView;
+import lii.hospitaltrial.view.NurseView;
 import lii.hospitaltrial.model.Department;
 import lii.hospitaltrial.component.CardBox;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 

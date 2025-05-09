@@ -9,18 +9,24 @@ import java.util.List;
 public class UserAccountCRUD {
 
     public boolean insertUserAccount(UserAccount account) {
-        String sql = "INSERT INTO useraccount (user_id, username, password, is_admin, employee_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO useraccount (username, password, is_admin, employee_id) " +
+                "VALUES (?, ?, ?, ?)";
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setLong(1, account.getUserId());
-                statement.setString(2, account.getUsername());
-                statement.setString(3, account.getPassword());
-                statement.setBoolean(4, account.isAdmin());
-                statement.setObject(5, account.getEmployeeId(), Types.BIGINT);
-                boolean result = statement.executeUpdate() > 0;
-                connection.commit();
-                return result;
+                statement.setString(1, account.getUsername());
+                statement.setString(2, account.getPassword());
+                statement.setBoolean(3, account.isAdmin());
+                statement.setObject(4, account.getEmployeeId(), Types.BIGINT);
+
+                ResultSet rs = statement.executeQuery();
+                if (rs.next()) {
+                    account.setUserId(rs.getLong(1));
+                    connection.commit();
+                    return true;
+                }
+                connection.rollback();
+                return false;
             } catch (SQLException e) {
                 connection.rollback();
                 e.printStackTrace();
@@ -31,6 +37,7 @@ public class UserAccountCRUD {
             return false;
         }
     }
+
 
     public List<UserAccount> getAllUserAccounts() {
         List<UserAccount> accounts = new ArrayList<>();

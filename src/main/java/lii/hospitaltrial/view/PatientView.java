@@ -1,9 +1,10 @@
-package lii.hospitaltrial.model;
+package lii.hospitaltrial.view;
 
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import lii.hospitaltrial.model.Patient;
 
 public class PatientView {
     private final LongProperty patientId;

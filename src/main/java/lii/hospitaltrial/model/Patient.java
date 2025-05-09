@@ -14,12 +14,16 @@ public class Patient {
 
     public Patient() {}
 
-    public Patient(long patientId, String firstName, String surname, String address, long telephoneNo) {
-        setPatientId(patientId);
+    public Patient(Long patientId, String firstName, String surname, String address, long telephoneNo) {
+        if (patientId != null) {
+            setPatientId(patientId);
+        }
         setFirstName(firstName);
         setSurname(surname);
         setAddress(address);
-        setTelephoneNo(telephoneNo);
+        if (patientId != null) {
+            setPatientId(patientId);
+        }
     }
 
     // Property accessors (follow JavaFX naming convention)
@@ -44,7 +48,7 @@ public class Patient {
     }
 
     // Getters
-    public long getPatientId() {
+    public Long getPatientId() {
         return patientId.get();
     }
 
@@ -65,10 +69,9 @@ public class Patient {
     }
 
     // Setters
-    public void setPatientId(long patientId) {
-        this.patientId.set(patientId);
+    public void setPatientId(Long patientId) {
+        this.patientId.set(patientId != null ? patientId : 0L);
     }
-
     public void setFirstName(String firstName) {
         this.firstName.set(firstName);
     }

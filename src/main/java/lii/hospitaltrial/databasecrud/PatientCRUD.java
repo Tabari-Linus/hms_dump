@@ -1,6 +1,7 @@
 package lii.hospitaltrial.databasecrud;
 
 import lii.hospitaltrial.model.Patient;
+import lii.hospitaltrial.databasecrud.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,18 +10,25 @@ import java.util.List;
 public class PatientCRUD {
 
     public boolean insertPatient(Patient patient) {
-        String sql = "INSERT INTO patient (patient_id, first_name, surname, address, telephone_no) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO patient (first_name, surname, address, telephone_no) " +
+                "VALUES (?, ?, ?, ?) RETURNING patient_id";
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setLong(1, patient.getPatientId());
-                statement.setString(2, patient.getFirstName());
-                statement.setString(3, patient.getSurname());
-                statement.setString(4, patient.getAddress());
-                statement.setLong(5, patient.getTelephoneNo());
-                boolean result = statement.executeUpdate() > 0;
-                connection.commit();
-                return result;
+                statement.setString(1, patient.getFirstName());
+                statement.setString(2, patient.getSurname());
+                statement.setString(3, patient.getAddress());
+                statement.setLong(4, patient.getTelephoneNo());
+
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        patient.setPatientId(rs.getLong(1));
+                        connection.commit();
+                        return true;
+                    }
+                }
+                connection.rollback();
+                return false;
             } catch (SQLException e) {
                 connection.rollback();
                 e.printStackTrace();
@@ -104,19 +112,24 @@ public class PatientCRUD {
         }
     }
 
-    public long getNextPatientId() {
-        String sql = "SELECT MAX(patient_id) FROM patient";
+    public Patient getPatientById(long id) throws SQLException {
+        String sql = "SELECT patient_id, first_name, surname, address, telephone_no " +
+                "FROM patient WHERE patient_id = ?";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                long maxId = rs.getLong(1);
-                return maxId > 0 ? maxId + 1 : 1001; // Start from 1001 if no existing records
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Patient(
+                            rs.getLong("patient_id"),
+                            rs.getString("first_name"),
+                            rs.getString("surname"),
+                            rs.getString("address"),
+                            rs.getLong("telephone_no")
+                    );
+                }
+                return null;
             }
-            return 1001; // Default starting ID
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return 1001;
         }
     }
 }

@@ -15,6 +15,7 @@ module lii.hospitaltrial {
     opens lii.hospitaltrial.controller to javafx.fxml;
     exports lii.hospitaltrial;
     exports lii.hospitaltrial.model;
+    exports lii.hospitaltrial.view;
 
 
 }

@@ -1,14 +1,16 @@
 package lii.hospitaltrial.model;
 
-public class PatientTransfer {
-    private long id;
-    private long patientId;
-    private long fromWard;
-    private long toWard;
-    private String reason;
-    private long patientAdmissionId;
 
-    public PatientTransfer(long id, long patientId, long fromWard, long toWard, String reason, long patientAdmissionId) {
+
+public class PatientTransfer {
+    private Long id;
+    private Long patientId;
+    private Long fromWard;
+    private Long toWard;
+    private String reason;
+    private Long patientAdmissionId;
+
+    public PatientTransfer(Long id, Long patientId, Long fromWard, Long toWard, String reason, Long patientAdmissionId) {
         this.id = id;
         this.patientId = patientId;
         this.fromWard = fromWard;
@@ -17,15 +19,15 @@ public class PatientTransfer {
         this.patientAdmissionId = patientAdmissionId;
     }
 
-    public long getId() {
+    public Long getTransferId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setTransferId(long id) {
         this.id = id;
     }
 
-    public long getPatientId() {
+    public Long getPatientId() {
         return patientId;
     }
 
@@ -33,7 +35,7 @@ public class PatientTransfer {
         this.patientId = patientId;
     }
 
-    public long getFromWard() {
+    public Long getFromWardId() {
         return fromWard;
     }
 
@@ -41,7 +43,7 @@ public class PatientTransfer {
         this.fromWard = fromWard;
     }
 
-    public long getToWard() {
+    public Long getToWardId() {
         return toWard;
     }
 
@@ -57,7 +59,7 @@ public class PatientTransfer {
         this.reason = reason;
     }
 
-    public long getPatientAdmissionId() {
+    public Long getPatientAdmissionId() {
         return patientAdmissionId;
     }
 

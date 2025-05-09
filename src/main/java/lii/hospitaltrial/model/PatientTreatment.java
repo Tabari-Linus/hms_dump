@@ -1,17 +1,17 @@
 package lii.hospitaltrial.model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 public class PatientTreatment {
-    private long id;
-    private long patientId;
-    private long doctorId;
-    private Date treatmentDate;
+    private Long id;
+    private Long patientId;
+    private Long doctorId;
+    private LocalDate treatmentDate;
     private String remarks;
-    private long patientAdmissionId;
+    private Long patientAdmissionId;
 
-    // Constructor
-    public PatientTreatment(long id, long patientId, long doctorId, Date treatmentDate, String remarks, long patientAdmissionId) {
+    public PatientTreatment(Long id, Long patientId, Long doctorId, LocalDate treatmentDate,
+                            String remarks, Long patientAdmissionId) {
         this.id = id;
         this.patientId = patientId;
         this.doctorId = doctorId;
@@ -20,55 +20,16 @@ public class PatientTreatment {
         this.patientAdmissionId = patientAdmissionId;
     }
 
-    // Default constructor
-    public PatientTreatment() {}
-
-    // Getters and Setters
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
+    // Add the missing setter
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public long getPatientId() {
-        return patientId;
-    }
-
-    public void setPatientId(long patientId) {
-        this.patientId = patientId;
-    }
-
-    public long getDoctorId() {
-        return doctorId;
-    }
-
-    public void setDoctorId(long doctorId) {
-        this.doctorId = doctorId;
-    }
-
-    public Date getTreatmentDate() {
-        return treatmentDate;
-    }
-
-    public void setTreatmentDate(Date treatmentDate) {
-        this.treatmentDate = treatmentDate;
-    }
-
-    public String getRemarks() {
-        return remarks;
-    }
-
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
-
-    public long getPatientAdmissionId() {
-        return patientAdmissionId;
-    }
-
-    public void setPatientAdmissionId(long patientAdmissionId) {
-        this.patientAdmissionId = patientAdmissionId;
-    }
+    // Getters
+    public Long getId() { return id; }
+    public Long getPatientId() { return patientId; }
+    public Long getDoctorId() { return doctorId; }
+    public LocalDate getTreatmentDate() { return treatmentDate; }
+    public String getRemarks() { return remarks; }
+    public Long getPatientAdmissionId() { return patientAdmissionId; }
 }

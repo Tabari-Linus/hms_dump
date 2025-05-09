@@ -9,19 +9,26 @@ import java.util.List;
 public class PatientTransferCRUD {
 
     public boolean insertTransfer(PatientTransfer transfer) {
-        String sql = "INSERT INTO patienttransfer (id, patient_id, from_ward, to_ward, reason, patient_admission_id) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO patienttransfer (patient_id, from_ward_id, to_ward_id, reason, patient_admission_id) " +
+                "VALUES (?, ?, ?, ?, ?) RETURNING id";
         try (Connection connection = DBConnection.getConnection()) {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
-                statement.setLong(1, transfer.getId());
-                statement.setLong(2, transfer.getPatientId());
-                statement.setLong(3, transfer.getFromWard());
-                statement.setLong(4, transfer.getToWard());
-                statement.setString(5, transfer.getReason());
-                statement.setLong(6, transfer.getPatientAdmissionId());
-                boolean result = statement.executeUpdate() > 0;
-                connection.commit();
-                return result;
+                statement.setLong(1, transfer.getPatientId());
+                statement.setLong(2, transfer.getFromWardId());
+                statement.setLong(3, transfer.getToWardId());
+                statement.setString(4, transfer.getReason());
+                statement.setLong(5, transfer.getPatientId());
+
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        transfer.setTransferId(rs.getLong(1));
+                        connection.commit();
+                        return true;
+                    }
+                }
+                connection.rollback();
+                return false;
             } catch (SQLException e) {
                 connection.rollback();
                 e.printStackTrace();
@@ -43,8 +50,8 @@ public class PatientTransferCRUD {
                 PatientTransfer transfer = new PatientTransfer(
                         resultSet.getLong("id"),
                         resultSet.getLong("patient_id"),
-                        resultSet.getLong("from_ward"),
-                        resultSet.getLong("to_ward"),
+                        resultSet.getLong("from_ward_id"),
+                        resultSet.getLong("to_ward_id"),
                         resultSet.getString("reason"),
                         resultSet.getLong("patient_admission_id")
                 );
@@ -62,11 +69,11 @@ public class PatientTransferCRUD {
             connection.setAutoCommit(false);
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setLong(1, transfer.getPatientId());
-                statement.setLong(2, transfer.getFromWard());
-                statement.setLong(3, transfer.getToWard());
+                statement.setLong(2, transfer.getFromWardId());
+                statement.setLong(3, transfer.getToWardId());
                 statement.setString(4, transfer.getReason());
                 statement.setLong(5, transfer.getPatientAdmissionId());
-                statement.setLong(6, transfer.getId());
+                statement.setLong(6, transfer.getTransferId());
                 boolean result = statement.executeUpdate() > 0;
                 connection.commit();
                 return result;

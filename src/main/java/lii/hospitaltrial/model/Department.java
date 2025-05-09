@@ -1,14 +1,14 @@
 package lii.hospitaltrial.model;
 
 public class Department {
-    private long departmentCode;
+    private Long departmentCode;
     private String departmentName;
     private String building;
     private long directorId;
 
     public Department() {}
 
-    public Department(long departmentCode, String departmentName, String building, long directorId) {
+    public Department(Long departmentCode, String departmentName, String building, long directorId) {
         this.departmentCode = departmentCode;
         this.departmentName = departmentName;
         this.building = building;
