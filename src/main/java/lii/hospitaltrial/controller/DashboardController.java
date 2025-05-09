@@ -7,28 +7,25 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
+import javafx.scene.Parent;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.StackPane;
-import javafx.scene.control.Button;
 import javafx.util.Duration;
 import lii.hospitaltrial.databasecrud.DBConnection;
+import lii.hospitaltrial.model.PatientAdmissionView;
 import lii.hospitaltrial.util.getTotal;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class DashboardController {
-    @FXML private StackPane contentArea;
-    @FXML private Button dashboardBtn;
-    @FXML private Button doctorsBtn;
-    @FXML private Button nursesBtn;
-    @FXML private Button patientsBtn;
-    @FXML private Button departmentsBtn;
-    @FXML private Button operationsBtn;
 
     @FXML private Label totalDoctors;
     @FXML private Label totalNurses;
@@ -37,18 +34,88 @@ public class DashboardController {
     @FXML private Label totalWards;
     @FXML private Label totalAdmissions;
 
+
+    @FXML private TableView<PatientAdmissionView> patientTableView;
+    @FXML private TableColumn<PatientAdmissionView, Long> patientIdCol;
+    @FXML private TableColumn<PatientAdmissionView, String> patientNameCol;
+    @FXML private TableColumn<PatientAdmissionView, Integer> wardNumberCol;
+    @FXML private TableColumn<PatientAdmissionView, String> doctorNameCol;
+    @FXML private TableColumn<PatientAdmissionView, String> diagnosisCol;
+    @FXML private TableColumn<PatientAdmissionView, String> admissionDateCol;
+
+    private MainDashboardController dashboardController;
+    private ObservableList<PatientAdmissionView> patientAdmissions = FXCollections.observableArrayList();
+
     @FXML
     private void handleDoctorsClick(MouseEvent event) {
-        loadPage("Doctors");
+        dashboardController.loadPage("Doctors");
     }
 
     @FXML
     private void initialize() {
-        // Initialize navigation first
-        setupNavigation();
+        if (patientTableView == null || patientIdCol == null || patientNameCol == null ||
+                wardNumberCol == null || doctorNameCol == null || diagnosisCol == null ||
+                admissionDateCol == null) {
+            System.err.println("FXML injection failed for table components");
+            return;
+        }
 
+        initializeTableColumns();
+        Platform.runLater(() -> {
+            loadDashboardData();
+            loadPatientAdmissions();
+        });
+    }
 
-        Platform.runLater(this::loadDashboardData);
+    private void initializeTableColumns() {
+        try {
+            patientIdCol.setCellValueFactory(new PropertyValueFactory<>("patientId"));
+            patientNameCol.setCellValueFactory(new PropertyValueFactory<>("patientName"));
+            wardNumberCol.setCellValueFactory(new PropertyValueFactory<>("wardNumber"));
+            doctorNameCol.setCellValueFactory(new PropertyValueFactory<>("doctorName"));
+            diagnosisCol.setCellValueFactory(new PropertyValueFactory<>("diagnosis"));
+            admissionDateCol.setCellValueFactory(new PropertyValueFactory<>("admissionDate"));
+        } catch (Exception e) {
+            showAlert("Table Initialization Error", "Failed to initialize table columns: " + e.getMessage());
+        }
+    }
+
+    private void loadPatientAdmissions() {
+        try (Connection connection = DBConnection.getConnection()) {
+            patientAdmissions.clear();
+
+            String query = "SELECT pa.id, p.patient_id, p.first_name || ' ' || p.surname AS patient_name, " +
+                    "w.ward_number, e.first_name || ' ' || e.surname AS doctor_name, " +
+                    "pa.diagnosis, pa.date_admitted " +
+                    "FROM patientadmission pa " +
+                    "JOIN patient p ON pa.patient_id = p.patient_id " +
+                    "JOIN ward w ON pa.ward_id = w.ward_id " +
+                    "LEFT JOIN patienttreatment pt ON pa.id = pt.patientadmission_id " +
+                    "LEFT JOIN doctor d ON pt.doctor_id = d.employee_id " +
+                    "LEFT JOIN employee e ON d.employee_id = e.employee_id " +
+                    "WHERE pa.date_discharged IS NULL";
+
+            try (PreparedStatement ps = connection.prepareStatement(query);
+                 ResultSet rs = ps.executeQuery()) {
+
+                while (rs.next()) {
+                    PatientAdmissionView admission = new PatientAdmissionView(
+                            rs.getLong("patient_id"),
+                            rs.getString("patient_name"),
+                            rs.getInt("ward_number"),
+                            rs.getString("doctor_name"),
+                            rs.getString("diagnosis"),
+                            rs.getDate("date_admitted").toString()
+                    );
+                    patientAdmissions.add(admission);
+                }
+            }
+
+            patientTableView.setItems(patientAdmissions);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Database Error", "Failed to load patient admissions: " + e.getMessage());
+        }
     }
 
     private void loadDashboardData() {
@@ -128,23 +195,10 @@ public class DashboardController {
         alert.showAndWait();
     }
 
-    private void setupNavigation() {
-        if (dashboardBtn != null) dashboardBtn.setOnAction(e -> loadPage("Dashboard"));
-        if (doctorsBtn != null) doctorsBtn.setOnAction(e -> loadPage("Doctors"));
-        if (nursesBtn != null) nursesBtn.setOnAction(e -> loadPage("Nurses"));
-        if (patientsBtn != null) patientsBtn.setOnAction(e -> loadPage("Patients"));
-        if (departmentsBtn != null) departmentsBtn.setOnAction(e -> loadPage("Departments"));
-        if (operationsBtn != null) operationsBtn.setOnAction(e -> loadPage("Operations"));
+
+
+    public void setDashboardController(MainDashboardController dashboardController) {
+        this.dashboardController = dashboardController;
     }
 
-    private void loadPage(String page) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/lii/hospitaltrial/view/" + page + ".fxml"));
-            Node pageContent = loader.load();
-            contentArea.getChildren().setAll(pageContent);
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert("Navigation Error", "Failed to load page: " + page);
-        }
-    }
 }

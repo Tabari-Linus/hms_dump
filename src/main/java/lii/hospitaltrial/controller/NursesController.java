@@ -211,16 +211,25 @@ public class NursesController {
                 Nurse nurse = controller.getNurse();
 
                 if (nurseView == null) {
-                    employeeCRUD.insertEmployee(employee);
+                    Long employeeId = employeeCRUD.insertEmployee(employee);
+                    nurse.setEmployeeId(employeeId);
                     nurseCRUD.insertNurse(nurse);
                 } else {
                     employeeCRUD.updateEmployee(employee);
                     nurseCRUD.updateNurse(nurse);
                 }
-                loadNurses(); // Refresh table
+                loadNurses();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            showAlert("Error", "Failed to save nurse: " + e.getMessage());
         }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

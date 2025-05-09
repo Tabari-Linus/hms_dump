@@ -6,7 +6,7 @@
 
 <HBox xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="lii.hospitaltrial.controller.DashboardController">
+      fx:controller="lii.hospitaltrial.controller.MainDashboardController">
     <VBox styleClass="sidebar">
         <Label text="Hospital MS" styleClass="sidebar-title"/>
 

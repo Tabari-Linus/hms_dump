@@ -130,8 +130,19 @@ public class NurseDialogController {
             }
 
             long employeeId = Long.parseLong(employeeIdField.getText());
-            long telephoneNo = Long.parseLong(telephoneNoField.getText());
-            double salary = Double.parseDouble(salaryField.getText());
+            long telephoneNo ;
+            try {
+                telephoneNo = Long.parseLong(telephoneNoField.getText());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Telephone No must be numeric.");
+            }
+
+            double salary ;
+            try {
+                salary = Double.parseDouble(salaryField.getText());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Salary must be numeric.");
+            }
 
             if (employee == null) {
                 employee = new Employee();

@@ -63,15 +63,12 @@
     <Label styleClass="section-title" text="Current Patient Admissions" />
     <TableView fx:id="patientTableView" styleClass="dashboard-table">
         <columns>
-            <TableColumn fx:id="patientIdCol" text="Patient ID" />
-            <TableColumn fx:id="patientNameCol" text="Patient Name" />
-            <TableColumn fx:id="wardNumberCol" text="Ward Number" />
-            <TableColumn fx:id="doctorNameCol" text="Diagnosing Doctor" />
-            <TableColumn fx:id="diagnosisCol" text="Diagnosis" />
-            <TableColumn fx:id="admissionDateCol" text="Admission Date" />
+            <TableColumn fx:id="patientIdCol" text="Patient ID" prefWidth="100"/>
+            <TableColumn fx:id="patientNameCol" text="Patient Name" prefWidth="200"/>
+            <TableColumn fx:id="wardNumberCol" text="Ward Number" prefWidth="100"/>
+            <TableColumn fx:id="doctorNameCol" text="Diagnosing Doctor" prefWidth="200"/>
+            <TableColumn fx:id="diagnosisCol" text="Diagnosis" prefWidth="250"/>
+            <TableColumn fx:id="admissionDateCol" text="Admission Date" prefWidth="150"/>
         </columns>
-      <columnResizePolicy>
-         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-      </columnResizePolicy>
     </TableView>
 </VBox>
