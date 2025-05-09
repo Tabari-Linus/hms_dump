@@ -49,7 +49,7 @@ public class HospitalSystemEndToEndTest {
     private static void createInitialData() throws Exception {
         System.out.println("\n--- Creating Initial Data ---");
 
-        // Insert specialities first (no dependencies)
+
         Speciality cardiology = new Speciality( null,"Cardiology");
         Speciality neurology = new Speciality(null, "Neurology");
         Speciality surgery = new Speciality(null, "General Surgery");
@@ -58,41 +58,44 @@ public class HospitalSystemEndToEndTest {
         specialityCRUD.insertSpeciality(neurology);
         specialityCRUD.insertSpeciality(surgery);
 
-        // Insert employees (no dependencies)
+
         Employee emp1 = new Employee(null, "John", "Smith", "123 Main St", 5551234567L);
         Employee emp2 = new Employee(null, "Emily", "Johnson", "456 Oak Ave", 5552345678L);
         Employee emp3 = new Employee(null, "Michael", "Williams", "789 Pine Rd", 5553456789L);
         Employee emp4 = new Employee(null, "Sarah", "Brown", "321 Elm St", 5554567890L);
         Employee emp5 = new Employee(null, "David", "Jones", "654 Maple Dr", 5555678901L);
+        Employee emp6 = new Employee(null, "David", "Jones", "654 Maple Dr", 5555678901L);
 
-        employeeCRUD.insertEmployee(emp1);
-        employeeCRUD.insertEmployee(emp2);
-        employeeCRUD.insertEmployee(emp3);
-        employeeCRUD.insertEmployee(emp4);
-        employeeCRUD.insertEmployee(emp5);
+        long i = employeeCRUD.insertEmployee(emp1);
+        long l =employeeCRUD.insertEmployee(emp2);
+        long j = employeeCRUD.insertEmployee(emp3);
+        long k =employeeCRUD.insertEmployee(emp4);
+        long p = employeeCRUD.insertEmployee(emp5);
+        long q = employeeCRUD.insertEmployee(emp6);
 
-        // Insert doctors (depends on employee and speciality)
-        doctorCRUD.insertDoctor(new Doctor(emp1.getEmployeeId(), cardiology.getSpecialityId()));
-        doctorCRUD.insertDoctor(new Doctor(emp2.getEmployeeId(), neurology.getSpecialityId()));
-        doctorCRUD.insertDoctor(new Doctor(emp3.getEmployeeId(), surgery.getSpecialityId()));
 
-        // Insert departments (depends on doctors)
-        Department dept1 = new Department(null, "Cardiology", "Building A", emp1.getEmployeeId());
-        Department dept2 = new Department(null, "Neurology", "Building B", emp2.getEmployeeId());
-        Department dept3 = new Department(null, "Surgery", "Building C", emp3.getEmployeeId());
+        doctorCRUD.insertDoctor(new Doctor(i, cardiology.getSpecialityId()));
+        doctorCRUD.insertDoctor(new Doctor(l, neurology.getSpecialityId()));
+        doctorCRUD.insertDoctor(new Doctor(j, surgery.getSpecialityId()));
+
+
+        Department dept1 = new Department(null, "Cardiology", "Building A", i);
+        Department dept2 = new Department(null, "Neurology", "Building B", j);
+        Department dept3 = new Department(null, "Surgery", "Building C", l);
 
         departmentCRUD.insertDepartment(dept1);
         departmentCRUD.insertDepartment(dept2);
         departmentCRUD.insertDepartment(dept3);
 
-        // Insert nurses (depends on employee and department)
-        nurseCRUD.insertNurse(new Nurse(emp4.getEmployeeId(), "Day", 65000.00, dept1.getDepartmentCode()));
-        nurseCRUD.insertNurse(new Nurse(emp5.getEmployeeId(), "Night", 68000.00, dept2.getDepartmentCode()));
 
-        // Insert wards (depends on department and nurse)
-        Ward ward1 = new Ward(null, dept1.getDepartmentCode(), 101, emp4.getEmployeeId(), 20);
-        Ward ward2 = new Ward(null, dept2.getDepartmentCode(), 201, emp5.getEmployeeId(), 15);
-        Ward ward3 = new Ward(null, dept1.getDepartmentCode(), 102, emp4.getEmployeeId(), 10);
+        nurseCRUD.insertNurse(new Nurse(k, "Day", 65000.00, dept1.getDepartmentCode()));
+        nurseCRUD.insertNurse(new Nurse(p, "Night", 68000.00, dept2.getDepartmentCode()));
+        nurseCRUD.insertNurse(new Nurse(q, "Day", 70000.00, dept3.getDepartmentCode()));
+
+
+        Ward ward1 = new Ward(null, dept1.getDepartmentCode(), 101, k, 20);
+        Ward ward2 = new Ward(null, dept2.getDepartmentCode(), 201, p, 15);
+        Ward ward3 = new Ward(null, dept1.getDepartmentCode(), 102, q, 10);
 
         wardCRUD.insertWard(ward1);
         wardCRUD.insertWard(ward2);
@@ -104,19 +107,25 @@ public class HospitalSystemEndToEndTest {
     private static void patientAdmissionWorkflow() throws Exception {
         System.out.println("\n--- Patient Admission Workflow ---");
 
-        // Get first ward for admission
+
         List<Ward> wards = wardCRUD.getAllWards();
         if (wards.isEmpty()) {
             throw new RuntimeException("No wards available for admission");
         }
         Ward firstWard = wards.get(0);
 
-        // Create patient
+
         Patient patient = new Patient(null, "Robert", "Wilson", "987 Cedar Ln", 5556789012L);
+        Patient patient1 = new Patient(null, "Alice", "Davis", "123 Birch St", 5557890123L);
+        Patient patient2 = new Patient(null, "James", "Garcia", "456 Spruce St", 5558901234L);
+        Patient patient3 = new Patient(null, "Linda", "Martinez", "789 Fir St", 5559012345L);
         patientCRUD.insertPatient(patient);
+        patientCRUD.insertPatient(patient1);
+        patientCRUD.insertPatient(patient2);
+        patientCRUD.insertPatient(patient3);
         System.out.println("Patient created: " + patient);
 
-        // Create admission
+
         PatientAdmission admission = new PatientAdmission(
                 null,
                 patient.getPatientId(),
@@ -126,10 +135,55 @@ public class HospitalSystemEndToEndTest {
                 LocalDate.of(2023, 11, 15),
                 LocalDate.of(2023, 11, 30)
         );
+        PatientAdmission admission1 = new PatientAdmission(
+                null,
+                patient1.getPatientId(),
+                firstWard.getWardId(),
+                6,
+                "Headache and dizziness, suspected stroke",
+                LocalDate.of(2023, 11, 16),
+                LocalDate.of(2023, 11, 30)
+        );
+        PatientAdmission admission2 = new PatientAdmission(
+                null,
+                patient2.getPatientId(),
+                firstWard.getWardId(),
+                7,
+                "Abdominal pain, suspected appendicitis",
+                LocalDate.of(2023, 11, 17),
+                LocalDate.of(2023, 11, 30)
+        );
+        PatientAdmission admission3 = new PatientAdmission(
+                null,
+                patient3.getPatientId(),
+                firstWard.getWardId(),
+                8,
+                "Fever and cough, suspected pneumonia",
+                LocalDate.of(2023, 11, 18),
+                LocalDate.of(2023, 11, 30)
+        );
 
         if (admissionCRUD.insertPatientAdmission(admission)) {
             System.out.println("Patient admitted successfully:");
             System.out.println(admission);
+        } else {
+            System.err.println("Failed to admit patient");
+        }
+        if (admissionCRUD.insertPatientAdmission(admission1)) {
+            System.out.println("Patient admitted successfully:");
+            System.out.println(admission1);
+        } else {
+            System.err.println("Failed to admit patient");
+        }
+        if (admissionCRUD.insertPatientAdmission(admission2)) {
+            System.out.println("Patient admitted successfully:");
+            System.out.println(admission2);
+        } else {
+            System.err.println("Failed to admit patient");
+        }
+        if (admissionCRUD.insertPatientAdmission(admission3)) {
+            System.out.println("Patient admitted successfully:");
+            System.out.println(admission3);
         } else {
             System.err.println("Failed to admit patient");
         }
@@ -138,7 +192,7 @@ public class HospitalSystemEndToEndTest {
     private static void patientTreatmentProcess() throws Exception {
         System.out.println("\n--- Patient Treatment Process ---");
 
-        // Get the first patient and doctor
+
         List<Patient> patients = patientCRUD.getAllPatients();
         if (patients.isEmpty()) {
             throw new RuntimeException("No patients available for treatment");
@@ -151,13 +205,24 @@ public class HospitalSystemEndToEndTest {
         }
         Doctor doctor = doctors.get(0);
 
+
+        admissionCRUD.insertPatientAdmission( new PatientAdmission(
+                null,
+                patient.getPatientId(),
+                1L,
+                1,
+                "Initial assessment",
+                LocalDate.of(2023, 11, 15),
+                null
+        ));
+
         List<PatientAdmission> admissions = admissionCRUD.getAdmissionsByPatient(patient.getPatientId());
         if (admissions.isEmpty()) {
             throw new RuntimeException("No admissions found for patient");
         }
         PatientAdmission admission = admissions.get(0);
 
-        // Create treatments
+
         PatientTreatment treatment1 = new PatientTreatment(
                 null,
                 patient.getPatientId(),
@@ -197,7 +262,7 @@ public class HospitalSystemEndToEndTest {
     private static void patientTransferProcess() throws Exception {
         System.out.println("\n--- Patient Transfer Process ---");
 
-        // Get patient and current admission
+
         List<Patient> patients = patientCRUD.getAllPatients();
         if (patients.isEmpty()) {
             throw new RuntimeException("No patients available for transfer");
@@ -210,18 +275,18 @@ public class HospitalSystemEndToEndTest {
         }
         PatientAdmission admission = admissions.get(0);
 
-        // Get available wards for transfer (excluding current ward)
+
         List<Ward> allWards = wardCRUD.getAllWards();
         if (allWards.size() < 2) {
             throw new RuntimeException("Not enough wards for transfer");
         }
         Ward fromWard = wardCRUD.getWardById(admission.getWardId());
-        // In patientTransferProcess method
+
         Ward toWard = allWards.stream()
                 .filter(w -> !Objects.equals(w.getWardId(), fromWard.getWardId()))
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("No suitable ward found for transfer"));
-        // Create transfer record
+
         PatientTransfer transfer = new PatientTransfer(
                 null,
                 patient.getPatientId(),
@@ -235,22 +300,22 @@ public class HospitalSystemEndToEndTest {
             System.out.println("Transfer recorded successfully:");
             System.out.println(transfer);
 
-            // Update admission to new ward
+
             admission.setWardId(toWard.getWardId());
-            admission.setBedNumber(3); // Assign new bed number
+            admission.setBedNumber(3);
 
             if (admissionCRUD.updateAdmission(admission)) {
                 System.out.println("Admission updated to new ward:");
                 System.out.println(admission);
 
-                // Get neurologist for new treatments
+
                 List<Doctor> neurologists = doctorCRUD.getDoctorsBySpeciality(2L); // Assuming 2 is neurology
                 if (neurologists.isEmpty()) {
                     throw new RuntimeException("No neurologists available");
                 }
                 Doctor neurologist = neurologists.get(0);
 
-                // Add new treatments after transfer
+
                 PatientTreatment treatment4 = new PatientTreatment(
                         null,
                         patient.getPatientId(),
@@ -281,14 +346,14 @@ public class HospitalSystemEndToEndTest {
     private static void dischargePatient() throws Exception {
         System.out.println("\n--- Patient Discharge Process ---");
 
-        // Get first patient admission
+
         List<PatientAdmission> admissions = admissionCRUD.getAllAdmissions();
         if (admissions.isEmpty()) {
             throw new RuntimeException("No admissions found");
         }
         PatientAdmission admission = admissions.get(0);
 
-        // Update discharge date
+
         admission.setDateDischarged(LocalDate.of(2023, 11, 25));
 
         if (admissionCRUD.updateAdmission(admission)) {
