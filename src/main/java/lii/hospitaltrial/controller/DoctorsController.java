@@ -169,7 +169,9 @@ public class DoctorsController {
                 ObservableList<DoctorView> filteredList = doctorsList.filtered(doctor ->
                         doctor.getFullName().toLowerCase().contains(newValue.toLowerCase()) ||
                                 String.valueOf(doctor.getEmployeeId()).contains(newValue) ||
-                                doctor.getSpecialityName().toLowerCase().contains(newValue.toLowerCase())
+                                doctor.getSpecialityName().toLowerCase().contains(newValue.toLowerCase()) ||
+                                String.valueOf(doctor.getTelephoneNo()).contains(newValue) ||
+                                doctor.getAddress().toLowerCase().contains(newValue.toLowerCase())
                 );
                 doctorsTable.setItems(filteredList);
             }

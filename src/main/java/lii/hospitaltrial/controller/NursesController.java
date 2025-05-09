@@ -142,7 +142,10 @@ public class NursesController {
                 ObservableList<NurseView> filteredList = nursesList.filtered(nurse ->
                         nurse.getFullName().toLowerCase().contains(newValue.toLowerCase()) ||
                                 String.valueOf(nurse.getEmployeeId()).contains(newValue) ||
-                                nurse.getDepartmentName().toLowerCase().contains(newValue.toLowerCase())
+                                nurse.getDepartmentName().toLowerCase().contains(newValue.toLowerCase()) ||
+                                nurse.getAddress().toLowerCase().contains(newValue.toLowerCase()) ||
+                                String.valueOf(nurse.getTelephoneNo()).contains(newValue) ||
+                                nurse.getRotation().toLowerCase().contains(newValue.toLowerCase())
                 );
                 nursesTable.setItems(filteredList);
             }

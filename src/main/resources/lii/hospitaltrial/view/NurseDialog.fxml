@@ -18,36 +18,34 @@
             <ColumnConstraints hgrow="ALWAYS"/>
         </columnConstraints>
 
-        <!-- Employee ID -->
+
         <Label text="Employee ID:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <TextField fx:id="employeeIdField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-        <!-- First Name -->
+
         <Label text="First Name:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
         <TextField fx:id="firstNameField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-        <!-- Surname -->
+
         <Label text="Surname:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
         <TextField fx:id="surnameField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-        <!-- Address -->
+
         <Label text="Address:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
         <TextField fx:id="addressField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-        <!-- Telephone -->
         <Label text="Telephone:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
         <TextField fx:id="telephoneNoField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-        <!-- Rotation -->
         <Label text="Rotation:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
         <ComboBox fx:id="rotationComboBox" GridPane.rowIndex="5" GridPane.columnIndex="1"
                   maxWidth="Infinity"/>
 
-        <!-- Salary -->
+
         <Label text="Salary:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
         <TextField fx:id="salaryField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
 
-        <!-- Department -->
+
         <Label text="Department:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
         <ComboBox fx:id="departmentComboBox" GridPane.rowIndex="7" GridPane.columnIndex="1"
                   maxWidth="Infinity"/>
